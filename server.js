@@ -261,6 +261,11 @@ app.get('/sejour/:id', async (req, res) => {
         res.redirect('/');
     }
 });
+// --- VERIFICATION GOOGLE SEARCH CONSOLE ---
+app.get('/google3f3ad9d8771e66b2.html', (req, res) => {
+    // On répond simplement avec le texte que Google attend
+    res.send('google-site-verification: google3f3ad9d8771e66b2.html');
+});
 // --- Pages du Menu (En construction pour l'instant) ---
 // Page DESTINATIONS (Catalogue complet)
 app.get('/destinations', async (req, res) => {
@@ -774,4 +779,5 @@ app.post('/demande/envoyer', isAuthenticated, async (req, res) => {
         req.flash('error_msg', 'Une erreur est survenue.');
         res.redirect('/');
     }
+
 });
