@@ -2,8 +2,8 @@
 <html lang="fr">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Travel of Wonder - Expert Parcs & Voyages</title>
+    <title><%= locals.pageTitle ? pageTitle : "Travel of Wonder - Séjours Parcs d'Attractions" %></title>
+<meta name="description" content="<%= locals.pageDescription ? pageDescription : "Organisateur de séjours sur mesure : Disney, Universal, Japon, USA. Devis gratuit pour particuliers et professionnels." %>">
     <link rel="stylesheet" href="/css/style.css">
     <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@300;400;600;700&display=swap" rel="stylesheet">
 </head>
@@ -39,4 +39,5 @@
             <a href="/connexion" class="btn-login">Connexion</a>
         <% } %>
     </div>
+
 </nav>
