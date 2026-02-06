@@ -1,0 +1,32 @@
+<%- include('partials/header') %>
+<div class="container" style="max-width: 700px; padding: 50px 20px;">
+    <h1 class="section-title">Demande de Groupe <span>(Tarif Pro)</span></h1>
+    <p style="text-align: center; margin-bottom: 40px;">Sélectionnez un séjour de base. Une remise automatique de <strong>50€ par personne</strong> sera appliquée sur le devis.</p>
+
+    <form action="/demande-groupe/envoyer" method="POST" style="background: white; padding: 40px; border-radius: 15px; box-shadow: 0 10px 30px rgba(0,0,0,0.1);">
+        
+        <div class="input-group" style="margin-bottom: 20px;">
+            <label style="font-weight: bold;">Choisir le séjour de base :</label>
+            <select name="tripId" ...>
+    <% trips.forEach(trip => { %>
+        <option value="<%= trip._id %>" <%= (selected && selected == trip._id) ? 'selected' : '' %>>
+            <%= trip.titre %> (Pro: <%= trip.prixBase - 50 %>€)
+        </option>
+    <% }) %>
+</select>
+        </div>
+
+        <div class="input-group" style="margin-bottom: 20px;">
+            <label style="font-weight: bold;">Nombre de participants (min 10)</label>
+            <input type="number" name="nbPeople" value="10" min="10" style="width: 100%; padding: 15px; border-radius: 10px; border: 1px solid #ccc;">
+        </div>
+
+        <div class="input-group" style="margin-bottom: 20px;">
+            <label style="font-weight: bold;">Précisions pour le groupe</label>
+            <textarea name="customMessage" rows="4" placeholder="Dates souhaitées, besoins spécifiques PMR, régime alimentaire..." style="width: 100%; padding: 15px; border-radius: 10px; border: 1px solid #ccc;"></textarea>
+        </div>
+
+        <button type="submit" class="btn-submit" style="background: var(--primary);">Envoyer la demande de devis</button>
+    </form>
+</div>
+<%- include('partials/footer') %>

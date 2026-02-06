@@ -1,0 +1,57 @@
+<%- include('partials/header') %>
+
+<div class="dashboard-container">
+    
+    <div class="dash-header">
+        <h1>Bonjour, <span><%= user.name %></span> !</h1>
+        <p>Espace <%= user.role === 'pro' ? 'Professionnel' : 'Voyageur' %></p>
+        
+        <% if(user.role === 'pro') { %>
+            <div class="pro-badge">
+                🏢 <%= user.company %> (Siret: <%= user.siret %>)
+            </div>
+        <% } %>
+    </div>
+
+    <div class="dashboard-grid">
+
+        <% if (user.role === 'particulier') { %>
+            
+            <div class="dash-card" onclick="window.location.href='/mes-demandes'">
+                <div class="icon">✈️</div>
+                <h3>Mes Voyages</h3>
+                <p>Vos réservations passées et à venir.</p>
+            </div>
+
+            <div class="dash-card" onclick="window.location.href='/mes-demandes'">
+                <div class="icon">📝</div>
+                <h3>Mes Demandes</h3>
+                <p>Suivi de vos devis sur mesure.</p>
+            </div>
+
+        <% } else if (user.role === 'pro') { %>
+
+            <div class="dash-card" onclick="window.location.href='/voyages-groupe'">
+                <div class="icon">🚌</div>
+                <h3>Voyages Groupe</h3>
+                <p>Gérez les séjours de votre CE/Entreprise.</p>
+            </div>
+
+            <div class="dash-card" onclick="window.location.href='/demande-groupe'">
+                <div class="icon">🤝</div>
+                <h3>Demande Devis</h3>
+                <p>Créer un projet pour +10 personnes.</p>
+            </div>
+
+        <% } %>
+
+        <div class="dash-card settings" onclick="window.location.href='/parametres'">
+            <div class="icon">⚙️</div>
+            <h3>Paramètres</h3>
+            <p>Modifier mon profil ou mot de passe.</p>
+        </div>
+
+    </div>
+</div>
+
+<%- include('partials/footer') %>

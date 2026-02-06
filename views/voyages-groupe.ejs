@@ -1,0 +1,59 @@
+<%- include('partials/header') %>
+
+<div style="background: #0F2440; color: white; padding: 60px 20px; text-align: center;">
+    <span style="background: var(--primary); color: white; padding: 5px 15px; border-radius: 20px; font-size: 0.9rem; font-weight: bold; text-transform: uppercase;">Espace Professionnel</span>
+    <h1 style="font-size: 3rem; margin: 20px 0;">Voyages de Groupe & C.E.</h1>
+    <p style="font-size: 1.2rem; color: #ccc;">Offrez l'inoubliable à vos collaborateurs avec nos tarifs préférentiels.</p>
+</div>
+
+<div class="container" style="padding: 60px 20px;">
+
+    <div class="dashboard-grid" style="margin-bottom: 60px;">
+        <div class="dash-card">
+            <div style="font-size: 2.5rem; color: var(--primary);">💰</div>
+            <h3>Tarifs Négociés</h3>
+            <p>-50€ / personne garanti sur tous nos séjours catalogue.</p>
+        </div>
+        <div class="dash-card">
+            <div style="font-size: 2.5rem; color: var(--primary);">📋</div>
+            <h3>Gestion Simplifiée</h3>
+            <p>Devis unique, facturation centralisée et interlocuteur dédié.</p>
+        </div>
+        <div class="dash-card">
+            <div style="font-size: 2.5rem; color: var(--primary);">🚌</div>
+            <h3>Logistique Incluse</h3>
+            <p>Nous gérons les transferts de groupe et les privatisations.</p>
+        </div>
+    </div>
+
+    <h2 class="section-title">Séjours éligibles <span>Offre Groupe</span></h2>
+    
+    <div class="destinations-grid">
+        <% voyages.forEach(voyage => { %>
+            <div class="trip-card">
+                <div class="trip-img" style="background-image: url('/img/<%= voyage.img %>');">
+                    <span style="position: absolute; top: 10px; right: 10px; background: var(--primary); color: white; padding: 5px 10px; font-weight: bold; border-radius: 5px;">
+                        PRO : <%= voyage.prixBase - 50 %>€ / pers.
+                    </span>
+                </div>
+                <div class="trip-content">
+                    <h3><%= voyage.titre %></h3>
+                    <p style="font-size: 0.9rem; color: #666;">Tarif public : <strike><%= voyage.prixBase %>€</strike></p>
+                    
+                    <div style="margin-top: 15px;">
+                        <a href="/demande-groupe?trip=<%= voyage._id %>" class="btn-login" style="display: block; text-align: center;">Demander un devis</a>
+                    </div>
+                </div>
+            </div>
+        <% }) %>
+    </div>
+
+    <div style="background: #e3f2fd; padding: 40px; border-radius: 20px; margin-top: 60px; text-align: center;">
+        <h3 style="color: var(--secondary);">Vous avez un projet spécifique pour +50 personnes ?</h3>
+        <p>Nous pouvons privatiser des espaces entiers et créer des événements sur mesure.</p>
+        <a href="/demande" class="btn-login" style="background: var(--secondary); margin-top: 20px; display: inline-block;">Contacter le service Grands Comptes</a>
+    </div>
+
+</div>
+
+<%- include('partials/footer') %>

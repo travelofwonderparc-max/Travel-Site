@@ -1,0 +1,118 @@
+<%- include('partials/header') %>
+
+<div class="login-page">
+    <div class="form-container">
+        <% if(success_msg != '') { %>
+            <div style="background: #d4edda; color: #155724; padding: 15px; border-radius: 10px; margin-bottom: 20px; text-align: center; border: 1px solid #c3e6cb;">
+                ✅ <%= success_msg %>
+            </div>
+        <% } %>
+
+        <% if(error_msg != '') { %>
+            <div style="background: #f8d7da; color: #721c24; padding: 15px; border-radius: 10px; margin-bottom: 20px; text-align: center; border: 1px solid #f5c6cb;">
+                ⚠️ <%= error_msg %>
+            </div>
+        <% } %>
+ 
+
+ <div class="form-header">
+            <h2>Bienvenue sur Travel of Wonder</h2>
+            <div class="toggle-btns">
+                <button class="toggle-btn active" onclick="showForm('login')">Connexion</button>
+                <button class="toggle-btn" onclick="showForm('register')">Créer un compte</button>
+            </div>
+        </div>
+
+        <form id="login-form" class="auth-form" action="/api/login" method="POST">
+            <div class="input-group">
+                <label>Email</label>
+                <input type="email" name="email" placeholder="votre@email.com" required>
+            </div>
+            <div class="input-group">
+                <label>Mot de passe</label>
+                <input type="password" name="password" placeholder="••••••••" required>
+            </div>
+            <button type="submit" class="btn-submit">Se connecter</button>
+            <p class="forgot-pass">Mot de passe oublié ?</p>
+        </form>
+
+        <form id="register-form" class="auth-form" action="/api/register" method="POST" style="display: none;">
+            
+            <div class="role-selector">
+                <p>Je suis un :</p>
+                <div class="radio-group">
+                    <label class="radio-label">
+                        <input type="radio" name="role" value="particulier" checked onchange="toggleProFields()">
+                        <span>👤 Particulier</span>
+                    </label>
+                    <label class="radio-label">
+                        <input type="radio" name="role" value="pro" onchange="toggleProFields()">
+                        <span>🏢 Professionnel</span>
+                    </label>
+                </div>
+            </div>
+
+            <div class="input-group">
+                <label>Nom complet</label>
+                <input type="text" name="name" placeholder="Jean Dupont" required>
+            </div>
+
+            <div id="pro-fields" style="display: none;">
+                <div class="input-group">
+                    <label>Nom de la Société / CE</label>
+                    <input type="text" name="company" placeholder="Ex: Comité d'Entreprise Airbus">
+                </div>
+                <div class="input-group">
+                    <label>Numéro SIRET</label>
+                    <input type="text" name="siret" placeholder="123 456 789 00012">
+                </div>
+            </div>
+
+            <div class="input-group">
+                <label>Email</label>
+                <input type="email" name="email" placeholder="votre@email.com" required>
+            </div>
+            <div class="input-group">
+                <label>Mot de passe</label>
+                <input type="password" name="password" placeholder="••••••••" required>
+            </div>
+
+            <button type="submit" class="btn-submit">S'inscrire</button>
+        </form>
+
+    </div>
+</div>
+
+<script>
+    // Basculer entre Connexion et Inscription
+    function showForm(type) {
+        const loginForm = document.getElementById('login-form');
+        const registerForm = document.getElementById('register-form');
+        const btns = document.querySelectorAll('.toggle-btn');
+
+        if (type === 'login') {
+            loginForm.style.display = 'block';
+            registerForm.style.display = 'none';
+            btns[0].classList.add('active');
+            btns[1].classList.remove('active');
+        } else {
+            loginForm.style.display = 'none';
+            registerForm.style.display = 'block';
+            btns[0].classList.remove('active');
+            btns[1].classList.add('active');
+        }
+    }
+
+    // Afficher les champs PRO si on clique sur Professionnel
+    function toggleProFields() {
+        const isPro = document.querySelector('input[name="role"][value="pro"]').checked;
+        const fields = document.getElementById('pro-fields');
+        if (isPro) {
+            fields.style.display = 'block';
+        } else {
+            fields.style.display = 'none';
+        }
+    }
+</script>
+
+<%- include('partials/footer') %>

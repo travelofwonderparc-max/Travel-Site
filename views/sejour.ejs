@@ -1,0 +1,167 @@
+<%- include('partials/header') %>
+
+<div style="background: linear-gradient(rgba(15, 36, 64, 0.8), rgba(15, 36, 64, 0.8)), url('/img/<%= trip.img %>') center/cover; padding: 80px 20px;">
+    
+    <div class="container" style="display: flex; gap: 50px; flex-wrap: wrap; align-items: flex-start;">
+        
+        <div style="flex: 2; min-width: 300px; color: white;">
+            
+            <a href="/destinations" style="color: #ccc; text-decoration: none; margin-bottom: 20px; display: inline-block;">← Retour au catalogue</a>
+            
+            <h1 style="font-size: 3.5rem; margin: 10px 0;"><%= trip.titre %></h1>
+            
+            <% if (user && user.role === 'pro') { %>
+                <div style="display: inline-block; background: var(--primary); color: white; padding: 5px 15px; border-radius: 20px; font-weight: bold; margin-bottom: 20px;">
+                    💎 Tarif Pro Appliqué (-50€/pers)
+                </div>
+            <% } %>
+
+            <p style="font-size: 1.2rem; line-height: 1.6; margin-bottom: 30px; color: #e0e0e0;">
+                <%= trip.details || trip.description %>
+            </p>
+
+            <% if(trip.programme && trip.programme.length > 0) { %>
+                <div style="background: rgba(255,255,255,0.05); padding: 25px; border-radius: 15px; margin-bottom: 30px;">
+                    <h3 style="color: var(--primary); margin-top: 0;">📍 Au Programme</h3>
+                    <ul style="list-style: none; padding: 0;">
+                        <% trip.programme.forEach(item => { %>
+                            <li style="margin-bottom: 10px; padding-left: 20px; position: relative;">
+                                <span style="position: absolute; left: 0; color: var(--primary);">•</span> <%= item %>
+                            </li>
+                        <% }) %>
+                    </ul>
+                </div>
+            <% } %>
+
+            <div style="display: flex; gap: 10px; flex-wrap: wrap;">
+                <% if(trip.inclus) { %>
+                    <% trip.inclus.forEach(item => { %>
+                        <span style="background: rgba(76, 175, 80, 0.2); color: #81c784; padding: 5px 15px; border-radius: 20px; font-size: 0.9rem; border: 1px solid rgba(76, 175, 80, 0.3);">
+                            ✅ <%= item %>
+                        </span>
+                    <% }) %>
+                <% } %>
+            </div>
+        </div>
+
+        <div style="flex: 1; min-width: 350px; background: white; padding: 30px; border-radius: 20px; box-shadow: 0 15px 40px rgba(0,0,0,0.3); position: sticky; top: 20px;">
+            
+            <h2 style="color: var(--secondary); margin-top: 0; text-align: center;">Configuration</h2>
+            <hr style="border: 0; border-top: 1px solid #eee; margin: 20px 0;">
+            
+            <form action="/demande/envoyer" method="POST" id="bookingForm">
+                <input type="hidden" name="tripId" value="<%= trip._id %>">
+                <input type="hidden" name="tripTitle" value="<%= trip.titre %>">
+
+                <div class="input-group">
+                    <label>Nombre de voyageurs</label>
+                    <div style="display: flex; align-items: center; gap: 10px;">
+                        <input type="number" id="nbPeople" name="nbPeople" value="<%= (user && user.role === 'pro') ? 10 : 2 %>" min="1" max="100" style="flex: 1; padding: 12px; font-size: 1.1rem; border-radius: 8px; border: 1px solid #ccc; text-align: center;">
+                        <span style="font-size: 1.5rem;">👤</span>
+                    </div>
+                </div>
+
+                <div style="margin: 25px 0;">
+                    <label style="font-weight: bold; display: block; margin-bottom: 15px;">Options & Extras :</label>
+                    
+                    <% if(trip.options.length > 0) { %>
+                        <div style="max-height: 200px; overflow-y: auto; padding-right: 5px;">
+                            <% trip.options.forEach((opt, index) => { %>
+                                <label style="display: flex; justify-content: space-between; align-items: center; padding: 10px; border: 1px solid #eee; border-radius: 8px; margin-bottom: 8px; cursor: pointer; transition: 0.2s;">
+                                    <div style="display: flex; align-items: center; gap: 10px;">
+                                        <input type="checkbox" class="option-checkbox" 
+                                               name="options" 
+                                               value="<%= opt.nom %>"
+                                               data-price="<%= opt.prix %>"
+                                               data-type="<%= opt.type %>">
+                                        <span style="font-size: 0.9rem;"><%= opt.nom %></span>
+                                    </div>
+                                    <span style="font-weight: bold; color: var(--primary); font-size: 0.9rem;">+<%= opt.prix %>€</span>
+                                </label>
+                            <% }) %>
+                        </div>
+                    <% } else { %>
+                        <p style="color: #888; font-size: 0.9rem;">Aucune option disponible.</p>
+                    <% } %>
+                </div>
+
+                <div style="margin-bottom: 20px;">
+                    <label style="font-weight: bold;">Message spécial</label>
+                    <textarea name="customMessage" rows="2" placeholder="Précisions, régime alimentaire..." style="width: 100%; padding: 10px; border: 1px solid #ccc; border-radius: 8px;"></textarea>
+                </div>
+
+                <div style="background: #f8f9fa; padding: 20px; border-radius: 10px; text-align: center; margin-bottom: 20px;">
+                    <span style="display: block; font-size: 0.9rem; color: #666; margin-bottom: 5px;">Estimation Totale</span>
+                    <span id="totalPrice" style="font-size: 2.5rem; font-weight: bold; color: var(--primary);">0€</span>
+                    
+                    <div id="pricePerPerson" style="font-size: 0.8rem; color: #888; margin-top: 5px;"></div>
+                    
+                    <input type="hidden" name="finalPrice" id="inputFinalPrice">
+                </div>
+
+                <% if (!user) { %>
+                    <a href="/connexion" class="btn-submit" style="display:block; text-align:center; text-decoration:none; background: #666;">Connectez-vous pour réserver</a>
+                <% } else if (user.role === 'pro') { %>
+                    <button type="submit" class="btn-submit" style="background: var(--secondary);">🏢 Demander Devis Groupe</button>
+                    <p style="font-size: 0.75rem; text-align: center; color: #888; margin-top: 10px;">Tarif Pro inclus. Devis officiel sous 24h.</p>
+                <% } else { %>
+                    <button type="submit" class="btn-submit">❤️ Ajouter aux Souhaits</button>
+                <% } %>
+
+            </form>
+        </div>
+    </div>
+</div>
+
+<script>
+    // ON RÉCUPÈRE LE PRIX DE BASE DEPUIS LA BDD
+    let originalBasePrice = <%= trip.prixBase %>;
+    
+    // ON VÉRIFIE SI L'UTILISATEUR EST PRO (Grâce à EJS qui injecte la valeur)
+    let isPro = <%= (user && user.role === 'pro') ? 'true' : 'false' %>;
+    
+    // SI PRO, ON APPLIQUE LA RÉDUCTION DE 50€
+    let currentBasePrice = isPro ? (originalBasePrice - 50) : originalBasePrice;
+
+    const nbPeopleInput = document.getElementById('nbPeople');
+    const checkboxes = document.querySelectorAll('.option-checkbox');
+    const displayPrice = document.getElementById('totalPrice');
+    const displayPerPerson = document.getElementById('pricePerPerson');
+    const inputFinalPrice = document.getElementById('inputFinalPrice');
+
+    function calculateTotal() {
+        let count = parseInt(nbPeopleInput.value) || 1;
+        let total = currentBasePrice * count;
+
+        checkboxes.forEach(box => {
+            if (box.checked) {
+                let price = parseFloat(box.getAttribute('data-price'));
+                let type = box.getAttribute('data-type'); 
+
+                if (type === 'par_personne') {
+                    total += (price * count);
+                } else {
+                    total += price; // Prix forfaitaire (ex: Hôtel Supérieur chambre)
+                }
+            }
+        });
+
+        // Affichage Formaté
+        displayPrice.innerText = total.toLocaleString('fr-FR') + "€";
+        inputFinalPrice.value = total;
+
+        // Info Prix par personne
+        let perPerson = Math.round(total / count);
+        let textPro = isPro ? "(Tarif Pro -50€ inclus)" : "";
+        displayPerPerson.innerText = `Soit environ ${perPerson}€ / pers. ${textPro}`;
+    }
+
+    // Écouteurs d'événements
+    nbPeopleInput.addEventListener('input', calculateTotal);
+    checkboxes.forEach(box => box.addEventListener('change', calculateTotal));
+
+    // Calcul au lancement
+    calculateTotal();
+</script>
+
+<%- include('partials/footer') %>
