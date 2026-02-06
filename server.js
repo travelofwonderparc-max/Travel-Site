@@ -723,6 +723,44 @@ app.get('/admin/order/:id/:status', isAuthenticated, isAdmin, async (req, res) =
         res.redirect('/admin');
     }
 });
+// --- SITEMAP DYNAMIQUE (POUR GOOGLE) ---
+app.get('/sitemap.xml', async (req, res) => {
+    try {
+        const baseUrl = "https://travel-of-wonder.onrender.com"; // ⚠️ REMPLACE PAR TON URL RENDER EXACTE
+        const trips = await Trip.find();
+
+        let content = `<?xml version="1.0" encoding="UTF-8"?>
+        <urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">
+            <url>
+                <loc>${baseUrl}/</loc>
+                <changefreq>daily</changefreq>
+                <priority>1.0</priority>
+            </url>
+            <url>
+                <loc>${baseUrl}/destinations</loc>
+                <changefreq>weekly</changefreq>
+                <priority>0.8</priority>
+            </url>`;
+
+        // On ajoute chaque voyage dynamiquement
+        trips.forEach(trip => {
+            content += `
+            <url>
+                <loc>${baseUrl}/sejour/${trip._id}</loc>
+                <changefreq>weekly</changefreq>
+                <priority>0.7</priority>
+            </url>`;
+        });
+
+        content += `</urlset>`;
+
+        res.header('Content-Type', 'application/xml');
+        res.send(content);
+
+    } catch (err) {
+        res.status(500).end();
+    }
+});
 // --- TRAITEMENT DE LA DEMANDE (POST) ---
 // --- TRAITEMENT DU FORMULAIRE DE SÉJOUR (UNIVERSEL) ---
 app.post('/demande/envoyer', isAuthenticated, async (req, res) => {
@@ -781,3 +819,4 @@ app.post('/demande/envoyer', isAuthenticated, async (req, res) => {
     }
 
 });
+
