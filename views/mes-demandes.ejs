@@ -4,7 +4,7 @@
     
     <div style="text-align: center; margin-bottom: 40px;">
         <h1 class="section-title">Mon Espace <span>Voyageur</span></h1>
-        <p style="color: #666;">Retrouvez ici vos devis et vos réservations.</p>
+        <p style="color: #666;">Retrouvez ici vos devis, vos réservations et vos avantages.</p>
     </div>
 
     <% if(locals.success_msg && success_msg != '') { %>
@@ -49,15 +49,16 @@
 
     <div style="background: #f8f9fa; padding: 20px; border-radius: 15px; margin-bottom: 40px; border: 1px dashed #ccc; display: flex; flex-wrap: wrap; justify-content: space-between; align-items: center; gap: 20px;">
         <div>
-            <h4 style="margin: 0; color: #333;">🕵️‍♂️ Vous ne trouvez pas votre réservation ?</h4>
-            <p style="margin: 5px 0 0 0; font-size: 0.9rem; color: #666;">Si vous avez réservé par téléphone ou sans compte, importez votre dossier ici.</p>
+            <h4 style="margin: 0; color: #333;">🕵️‍♂️ Retrouver une réservation</h4>
+            <p style="margin: 5px 0 0 0; font-size: 0.9rem; color: #666;">Vous avez réservé sans compte ? Importez votre dossier.</p>
         </div>
         <form action="/mes-demandes/import" method="POST" style="display: flex; gap: 10px;">
             <input type="text" name="reservationNumber" placeholder="N° Dossier (ex: TW-2024-123)" required style="padding: 10px; border: 1px solid #ccc; border-radius: 5px; width: 250px;">
             <button type="submit" class="btn-login" style="background: #34495e; padding: 10px 20px; font-size: 0.9rem;">Importer</button>
         </form>
     </div>
-    <% if (orders.length === 0) { %>
+
+    <% if (!orders || orders.length === 0) { %>
         <div style="text-align: center; color: #777; margin-top: 50px;">
             <h3>Vous n'avez aucun dossier en cours.</h3>
             <div style="margin-top: 20px;">
@@ -140,3 +141,4 @@
 </div>
 
 <%- include('partials/footer') %>
+
