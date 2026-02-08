@@ -4,7 +4,7 @@
     
     <div style="text-align: center; margin-bottom: 40px;">
         <h1 class="section-title">Mon Espace <span>Voyageur</span></h1>
-        <p style="color: #666;">Retrouvez ici vos devis, vos réservations et vos avantages.</p>
+        <p style="color: #666;">Gérez vos réservations et profitez de vos avantages exclusifs.</p>
     </div>
 
     <% if(locals.success_msg && success_msg != '') { %>
@@ -14,53 +14,88 @@
         <div class="alert alert-danger" style="background: #f8d7da; color: #721c24; padding: 15px; margin-bottom: 20px; border-radius: 5px;">⚠️ <%= error_msg %></div>
     <% } %>
 
-    <% if (locals.loyalty) { %>
-        <% 
-            let tier = 0;
-            if (loyalty.level === 'Wonder 1') tier = 1;
-            if (loyalty.level === 'Wonder 2') tier = 2;
-            if (loyalty.level === 'Wonder 3') tier = 3;
-        %>
+    <div style="background: #f8f9fa; padding: 25px; border-radius: 15px; margin-bottom: 50px; border: 2px dashed #95a5a6; display: flex; flex-wrap: wrap; align-items: center; justify-content: space-between; gap: 20px;">
+        <div style="max-width: 450px;">
+            <h3 style="margin: 0; color: #2c3e50; font-size: 1.1rem;">📥 Importer un ancien séjour</h3>
+            <p style="margin: 5px 0 0 0; font-size: 0.9rem; color: #7f8c8d;">Vous avez réservé par téléphone ou sans compte ? Récupérez votre dossier pour débloquer vos avantages et noter le voyage !</p>
+        </div>
+        <form action="/mes-demandes/import" method="POST" style="flex: 1; display: flex; gap: 10px; flex-wrap: wrap;">
+            <input type="text" name="reservationNumber" placeholder="N° Dossier (ex: TW-2024-XXX)" required style="flex: 1; min-width: 150px; padding: 10px; border: 1px solid #ddd; border-radius: 5px;">
+            <input type="email" name="emailVerification" placeholder="Email de réservation" required style="flex: 1; min-width: 150px; padding: 10px; border: 1px solid #ddd; border-radius: 5px;">
+            <button type="submit" class="btn-login" style="background: #2c3e50; color: white; border: none; padding: 0 20px; border-radius: 5px; cursor: pointer; font-weight: bold;">Valider</button>
+        </form>
+    </div>
 
-        <div style="background: linear-gradient(135deg, #1c1c1c 0%, #2c3e50 100%); color: white; padding: 40px 30px; border-radius: 20px; margin-bottom: 50px; box-shadow: 0 15px 30px rgba(0,0,0,0.3); position: relative; overflow: hidden;">
-            <div style="text-align: center; margin-bottom: 40px; position: relative; z-index: 2;">
+    <% if (locals.loyalty) { %>
+        <div style="background: linear-gradient(135deg, #000000 0%, #434343 100%); color: white; padding: 40px 30px; border-radius: 20px; margin-bottom: 50px; box-shadow: 0 15px 30px rgba(0,0,0,0.3);">
+            
+            <div style="text-align: center; margin-bottom: 40px;">
                 <h2 style="font-size: 2.5rem; margin: 0; text-transform: uppercase; letter-spacing: 2px;">👑 Wonder Club</h2>
-                <div style="background: rgba(255,255,255,0.1); display: inline-block; padding: 10px 25px; border-radius: 50px; margin-top: 20px; border: 1px solid rgba(255,255,255,0.2);">
-                    Voyages validés : <strong style="color: #f1c40f; font-size: 1.2rem;"><%= loyalty.count %></strong>
+                <div style="margin-top: 5px; font-size: 1.2rem; color: <%= loyalty.color %>; font-weight: bold;">
+                    Statut : <%= loyalty.level %>
+                </div>
+
+                <div style="max-width: 500px; margin: 25px auto 0 auto;">
+                    <div style="display: flex; justify-content: space-between; margin-bottom: 5px; font-size: 0.9rem; color: #ccc;">
+                        <span>Progression</span>
+                        <% if (loyalty.nextTarget === 100) { %>
+                            <span>Niveau Max Atteint !</span>
+                        <% } else { %>
+                            <span><%= loyalty.count %> / <%= loyalty.nextTarget %> séjours</span>
+                        <% } %>
+                    </div>
+                    <div style="width: 100%; height: 12px; background: rgba(255,255,255,0.2); border-radius: 10px; overflow: hidden;">
+                        <div style="width: <%= loyalty.percentage %>%; height: 100%; background: linear-gradient(90deg, #f1c40f, #e67e22); border-radius: 10px; transition: width 0.5s ease;"></div>
+                    </div>
                 </div>
             </div>
 
-            <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(250px, 1fr)); gap: 20px; position: relative; z-index: 2;">
-                <div style="background: <%= tier >= 1 ? 'linear-gradient(135deg, #FFF 0%, #f0f0f0 100%)' : 'rgba(255,255,255,0.05)' %>; color: <%= tier >= 1 ? '#333' : 'rgba(255,255,255,0.5)' %>; padding: 25px; border-radius: 15px; border: 2px solid <%= tier >= 1 ? '#cd7f32' : 'rgba(255,255,255,0.1)' %>; opacity: <%= tier >= 1 ? '1' : '0.6' %>;">
-                    <h3 style="margin: 0; color: #cd7f32;">🥉 Wonder 1</h3>
-                    <p style="font-size: 0.9rem;">Dès 2 voyages</p>
+            <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(280px, 1fr)); gap: 20px;">
+                
+                <div style="background: rgba(255,255,255,0.05); padding: 25px; border-radius: 15px; border: 1px solid #cd7f32; position: relative; <%= loyalty.level === 'Wonder 1' ? 'background: rgba(205, 127, 50, 0.15); box-shadow: 0 0 15px rgba(205, 127, 50, 0.3);' : '' %>">
+                    <h3 style="color: #cd7f32; margin-top: 0; border-bottom: 1px solid rgba(205, 127, 50, 0.3); padding-bottom: 10px;">🥉 Wonder 1</h3>
+                    <p style="font-size: 0.9rem; font-style: italic; opacity: 0.8; margin-bottom: 15px;">2 séjours requis</p>
+                    <ul style="padding-left: 20px; line-height: 1.6; font-size: 0.9rem;">
+                        <li>Inscription prioritaire 🚀</li>
+                        <li>-5% sur le séjour 🏷️</li>
+                    </ul>
+                    <% if(loyalty.level === 'Wonder 1') { %> <div style="position: absolute; top: 10px; right: 10px; font-size: 1.5rem;">✅</div> <% } %>
                 </div>
-                <div style="background: <%= tier >= 2 ? 'linear-gradient(135deg, #FFF 0%, #f0f0f0 100%)' : 'rgba(255,255,255,0.05)' %>; color: <%= tier >= 2 ? '#333' : 'rgba(255,255,255,0.5)' %>; padding: 25px; border-radius: 15px; border: 2px solid <%= tier >= 2 ? '#bdc3c7' : 'rgba(255,255,255,0.1)' %>; opacity: <%= tier >= 2 ? '1' : '0.6' %>;">
-                    <h3 style="margin: 0; color: #7f8c8d;">🥈 Wonder 2</h3>
-                    <p style="font-size: 0.9rem;">Dès 7 voyages (-10%)</p>
+
+                <div style="background: rgba(255,255,255,0.05); padding: 25px; border-radius: 15px; border: 1px solid #c0c0c0; position: relative; <%= loyalty.level === 'Wonder 2' ? 'background: rgba(192, 192, 192, 0.15); box-shadow: 0 0 15px rgba(192, 192, 192, 0.3);' : '' %>">
+                    <h3 style="color: #c0c0c0; margin-top: 0; border-bottom: 1px solid rgba(192, 192, 192, 0.3); padding-bottom: 10px;">🥈 Wonder 2</h3>
+                    <p style="font-size: 0.9rem; font-style: italic; opacity: 0.8; margin-bottom: 15px;">5 séjours requis</p>
+                    <ul style="padding-left: 20px; line-height: 1.6; font-size: 0.9rem;">
+                        <li>Inscription prioritaire 🚀</li>
+                        <li>-10% sur les séjours 🏷️</li>
+                        <li>Petit déj compris (sur certains séjours) ☕</li>
+                        <li>Option gratuite (sur certains séjours) 🎁</li>
+                    </ul>
+                    <% if(loyalty.level === 'Wonder 2') { %> <div style="position: absolute; top: 10px; right: 10px; font-size: 1.5rem;">✅</div> <% } %>
                 </div>
-                <div style="background: <%= tier >= 3 ? 'linear-gradient(135deg, #FFF 0%, #fffbe6 100%)' : 'rgba(255,255,255,0.05)' %>; color: <%= tier >= 3 ? '#333' : 'rgba(255,255,255,0.5)' %>; padding: 25px; border-radius: 15px; border: 2px solid <%= tier >= 3 ? '#f1c40f' : 'rgba(255,255,255,0.1)' %>; opacity: <%= tier >= 3 ? '1' : '0.6' %>;">
-                    <h3 style="margin: 0; color: #f39c12;">🥇 Wonder 3</h3>
-                    <p style="font-size: 0.9rem;">Dès 15 voyages (-15%)</p>
+
+                <div style="background: rgba(255,255,255,0.05); padding: 25px; border-radius: 15px; border: 1px solid #ffd700; position: relative; <%= loyalty.level === 'Wonder 3' ? 'background: rgba(255, 215, 0, 0.15); box-shadow: 0 0 15px rgba(255, 215, 0, 0.3);' : '' %>">
+                    <h3 style="color: #ffd700; margin-top: 0; border-bottom: 1px solid rgba(255, 215, 0, 0.3); padding-bottom: 10px;">🥇 Wonder 3</h3>
+                    <p style="font-size: 0.9rem; font-style: italic; opacity: 0.8; margin-bottom: 15px;">10 séjours requis</p>
+                    <ul style="padding-left: 20px; line-height: 1.6; font-size: 0.9rem;">
+                        <li>Inscription prioritaire 🚀</li>
+                        <li>-15% sur les séjours 💎</li>
+                        <li>Accès aux soirées Parc privatisé 🏰</li>
+                        <li>Petit déj compris (sur certains séjours) ☕</li>
+                        <li>Surclassement offert (sur certains séjours) 🛌</li>
+                        <li>Option gratuite (sur certains séjours) 🎁</li>
+                    </ul>
+                    <% if(loyalty.level === 'Wonder 3') { %> <div style="position: absolute; top: 10px; right: 10px; font-size: 1.5rem;">✅</div> <% } %>
                 </div>
+
             </div>
         </div>
     <% } %>
 
-    <div style="background: #f8f9fa; padding: 20px; border-radius: 15px; margin-bottom: 40px; border: 1px dashed #ccc; display: flex; flex-wrap: wrap; justify-content: space-between; align-items: center; gap: 20px;">
-        <div>
-            <h4 style="margin: 0; color: #333;">🕵️‍♂️ Retrouver une réservation</h4>
-            <p style="margin: 5px 0 0 0; font-size: 0.9rem; color: #666;">Vous avez réservé sans compte ? Importez votre dossier.</p>
-        </div>
-        <form action="/mes-demandes/import" method="POST" style="display: flex; gap: 10px;">
-            <input type="text" name="reservationNumber" placeholder="N° Dossier (ex: TW-2024-123)" required style="padding: 10px; border: 1px solid #ccc; border-radius: 5px; width: 250px;">
-            <button type="submit" class="btn-login" style="background: #34495e; padding: 10px 20px; font-size: 0.9rem;">Importer</button>
-        </form>
-    </div>
-
     <% if (!orders || orders.length === 0) { %>
         <div style="text-align: center; color: #777; margin-top: 50px;">
             <h3>Vous n'avez aucun dossier en cours.</h3>
+            <p>Utilisez le formulaire ci-dessus pour importer un ancien séjour ou réservez-en un nouveau !</p>
             <div style="margin-top: 20px;">
                 <a href="/destinations" class="btn-login">✈️ Faire un devis</a>
                 <a href="/departs-groupes" class="btn-login" style="background: var(--secondary); margin-left: 10px;">🌍 Nos Voyages</a>
@@ -73,9 +108,10 @@
             <% orders.forEach(order => { %>
                 
                 <% 
+                    // Gestion Statuts
+                    let s = order.status ? order.status.toLowerCase() : '';
                     let statusColor = '#f39c12';
                     let statusIcon = '⏳';
-                    let s = order.status ? order.status.toLowerCase() : '';
                     
                     if (s.includes('valid') || s.includes('pay')) { statusColor = '#27ae60'; statusIcon = '✅'; }
                     if (s.includes('termin')) { statusColor = '#2c3e50'; statusIcon = '🏁'; }
@@ -141,4 +177,3 @@
 </div>
 
 <%- include('partials/footer') %>
-
