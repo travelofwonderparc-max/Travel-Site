@@ -1722,6 +1722,38 @@ app.get('/sitemap.xml', async (req, res) => {
         res.status(500).end();
     }
 });
+// --- IMPORTER UNE COMMANDE EXISTANTE ---
+app.post('/mes-demandes/import', isAuthenticated, async (req, res) => {
+    try {
+        const { reservationNumber } = req.body;
+        
+        // 1. On cherche la commande
+        const order = await Order.findOne({ reservationNumber: reservationNumber.trim() });
+
+        if (!order) {
+            req.flash('error_msg', 'Numéro de dossier introuvable.');
+            return res.redirect('/mes-demandes');
+        }
+
+        // 2. Sécurité : Vérifier que l'email correspond (ou que la commande n'a pas déjà un user)
+        // Ici, on vérifie si l'email de la commande est le même que celui du compte connecté
+        if (order.userEmail !== req.session.user.email) {
+            req.flash('error_msg', 'Cette commande ne correspond pas à votre adresse email.');
+            return res.redirect('/mes-demandes');
+        }
+
+        // 3. On rattache la commande à l'utilisateur
+        order.userId = req.session.user._id;
+        await order.save();
+
+        req.flash('success_msg', 'Commande importée avec succès ! 🎉');
+        res.redirect('/mes-demandes');
+
+    } catch (err) {
+        console.error(err);
+        res.redirect('/mes-demandes');
+    }
+});
 // --- TRAITEMENT DE LA DEMANDE (POST) ---
 // --- TRAITEMENT DU FORMULAIRE DE SÉJOUR (UNIVERSEL) ---
 app.post('/demande/envoyer', isAuthenticated, async (req, res) => {
@@ -1781,4 +1813,5 @@ app.post('/demande/envoyer', isAuthenticated, async (req, res) => {
     }
 
 });
+
 
