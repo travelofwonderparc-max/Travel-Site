@@ -833,51 +833,45 @@ app.get('/mes-voyages', isAuthenticated, (req, res) => {
 // AFFICHER LE PROFIL ET LA FIDÉLITÉ
 // AFFICHER LE PROFIL, FIDÉLITÉ ET GÉRER LES AVIS
 // --- AFFICHER MES VOYAGES (Route Complète : Fidélité + Avis + Import) ---
+// AFFICHER MES VOYAGES (FIDÉLITÉ + AVIS + COMMANDES)
 app.get('/mes-demandes', isAuthenticated, async (req, res) => {
     try {
         const userId = req.session.user._id;
 
-        // 1. Récupérer les commandes
+        // 1. Commandes
         const orders = await Order.find({ userId: userId }).sort({ createdAt: -1 });
 
-        // 2. Récupérer les avis déjà donnés (pour cacher le bouton si déjà fait)
+        // 2. Avis déjà donnés (pour ne pas afficher le bouton deux fois)
         const myReviews = await Review.find({ userId: userId });
         const reviewedTripIds = myReviews.map(r => r.tripId.toString());
 
-        // 3. Calculer le niveau Wonder Club
-        // On compte les voyages payés ou terminés
+        // 3. Calcul Fidélité
+        // On compte tout ce qui est payé, validé ou terminé
         const tripCount = await Order.countDocuments({ 
             userId: userId, 
             status: { $in: ['Payée', 'Terminée', 'Validée'] } 
         });
 
         let level = 'Explorateur';
-        let nextLevelTrips = 2;
-        let badgeColor = '#6c757d';
+        let badgeColor = '#6c757d'; // Gris
         
-        if (tripCount >= 2 && tripCount < 7) {
-            level = 'Wonder 1'; nextLevelTrips = 7; badgeColor = '#cd7f32'; // Bronze
-        } else if (tripCount >= 7 && tripCount < 15) {
-            level = 'Wonder 2'; nextLevelTrips = 15; badgeColor = '#c0c0c0'; // Argent
-        } else if (tripCount >= 15) {
-            level = 'Wonder 3'; nextLevelTrips = 100; badgeColor = '#ffd700'; // Or
-        }
+        if (tripCount >= 2) { level = 'Wonder 1'; badgeColor = '#cd7f32'; } // Bronze
+        if (tripCount >= 7) { level = 'Wonder 2'; badgeColor = '#c0c0c0'; } // Argent
+        if (tripCount >= 15) { level = 'Wonder 3'; badgeColor = '#ffd700'; } // Or
 
-        // 4. On envoie tout à la page
         res.render('mes-demandes', { 
             user: req.session.user, 
             orders: orders,
-            reviewedTripIds: reviewedTripIds, // Important pour le bouton avis
-            loyalty: { // Important pour l'affichage Wonder Club
+            reviewedTripIds: reviewedTripIds,
+            loyalty: {
                 count: tripCount,
                 level: level,
-                nextTarget: nextLevelTrips,
                 color: badgeColor
             }
         });
 
     } catch (err) {
-        console.error("Erreur mes-demandes:", err);
+        console.error(err);
         res.redirect('/');
     }
 });
@@ -1815,6 +1809,7 @@ app.post('/demande/envoyer', isAuthenticated, async (req, res) => {
     }
 
 });
+
 
 
 
