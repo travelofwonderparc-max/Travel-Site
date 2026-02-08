@@ -7,6 +7,13 @@
         <p style="color: #666;">Retrouvez ici vos devis et vos réservations.</p>
     </div>
 
+    <% if(locals.success_msg && success_msg != '') { %>
+        <div class="alert alert-success" style="background: #d4edda; color: #155724; padding: 15px; margin-bottom: 20px; border-radius: 5px;">✅ <%= success_msg %></div>
+    <% } %>
+    <% if(locals.error_msg && error_msg != '') { %>
+        <div class="alert alert-danger" style="background: #f8d7da; color: #721c24; padding: 15px; margin-bottom: 20px; border-radius: 5px;">⚠️ <%= error_msg %></div>
+    <% } %>
+
     <% if (locals.loyalty) { %>
         <% 
             let tier = 0;
@@ -40,11 +47,22 @@
         </div>
     <% } %>
 
+    <div style="background: #f8f9fa; padding: 20px; border-radius: 15px; margin-bottom: 40px; border: 1px dashed #ccc; display: flex; flex-wrap: wrap; justify-content: space-between; align-items: center; gap: 20px;">
+        <div>
+            <h4 style="margin: 0; color: #333;">🕵️‍♂️ Vous ne trouvez pas votre réservation ?</h4>
+            <p style="margin: 5px 0 0 0; font-size: 0.9rem; color: #666;">Si vous avez réservé par téléphone ou sans compte, importez votre dossier ici.</p>
+        </div>
+        <form action="/mes-demandes/import" method="POST" style="display: flex; gap: 10px;">
+            <input type="text" name="reservationNumber" placeholder="N° Dossier (ex: TW-2024-123)" required style="padding: 10px; border: 1px solid #ccc; border-radius: 5px; width: 250px;">
+            <button type="submit" class="btn-login" style="background: #34495e; padding: 10px 20px; font-size: 0.9rem;">Importer</button>
+        </form>
+    </div>
     <% if (orders.length === 0) { %>
         <div style="text-align: center; color: #777; margin-top: 50px;">
             <h3>Vous n'avez aucun dossier en cours.</h3>
             <div style="margin-top: 20px;">
                 <a href="/destinations" class="btn-login">✈️ Faire un devis</a>
+                <a href="/departs-groupes" class="btn-login" style="background: var(--secondary); margin-left: 10px;">🌍 Nos Voyages</a>
             </div>
         </div>
     <% } else { %>
@@ -54,10 +72,8 @@
             <% orders.forEach(order => { %>
                 
                 <% 
-                    let statusColor = '#f39c12'; // Orange par défaut
+                    let statusColor = '#f39c12';
                     let statusIcon = '⏳';
-                    
-                    // On gère les statuts avec souplesse (minuscule/majuscule)
                     let s = order.status ? order.status.toLowerCase() : '';
                     
                     if (s.includes('valid') || s.includes('pay')) { statusColor = '#27ae60'; statusIcon = '✅'; }
@@ -96,14 +112,11 @@
                             <% } %>
 
                             <% 
-                                // Vérification intelligente de l'avis
                                 let alreadyReviewed = false;
                                 if (locals.reviewedTripIds && order.tripId) {
                                     alreadyReviewed = reviewedTripIds.includes(order.tripId.toString());
                                 }
-                                
-                                // Vérification intelligente du statut (contient "pay" ou "termin")
-                                let isPaidOrFinished = s.includes('termin');
+                                let isPaidOrFinished = s.includes('pay') || s.includes('termin');
                             %>
 
                             <% if (order.tripId && isPaidOrFinished && !alreadyReviewed) { %>
