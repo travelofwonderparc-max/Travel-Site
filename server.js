@@ -841,23 +841,43 @@ app.get('/mes-demandes', isAuthenticated, async (req, res) => {
         // 1. Commandes
         const orders = await Order.find({ userId: userId }).sort({ createdAt: -1 });
 
-        // 2. Avis déjà donnés (pour ne pas afficher le bouton deux fois)
+        // 2. Avis déjà donnés
         const myReviews = await Review.find({ userId: userId });
         const reviewedTripIds = myReviews.map(r => r.tripId.toString());
 
-        // 3. Calcul Fidélité
-        // On compte tout ce qui est payé, validé ou terminé
+        // 3. Calcul Fidélité (NOUVEAUX PALIERS)
         const tripCount = await Order.countDocuments({ 
             userId: userId, 
             status: { $in: ['Payée', 'Terminée', 'Validée'] } 
         });
 
-        let level = 'Explorateur';
+        let level = 'Explorateur'; // Niveau 0
+        let nextTarget = 2;        // Prochain but : Wonder 1
         let badgeColor = '#6c757d'; // Gris
         
-        if (tripCount >= 2) { level = 'Wonder 1'; badgeColor = '#cd7f32'; } // Bronze
-        if (tripCount >= 7) { level = 'Wonder 2'; badgeColor = '#c0c0c0'; } // Argent
-        if (tripCount >= 15) { level = 'Wonder 3'; badgeColor = '#ffd700'; } // Or
+        // Logique des niveaux demandés
+        if (tripCount >= 2 && tripCount < 5) {
+            level = 'Wonder 1'; 
+            nextTarget = 5; 
+            badgeColor = '#cd7f32'; // Bronze
+        } else if (tripCount >= 5 && tripCount < 10) {
+            level = 'Wonder 2'; 
+            nextTarget = 10; 
+            badgeColor = '#c0c0c0'; // Argent
+        } else if (tripCount >= 10) {
+            level = 'Wonder 3'; 
+            nextTarget = 100; // Max atteint
+            badgeColor = '#ffd700'; // Or
+        }
+
+        // Calcul pourcentage barre de progression
+        // Ex: j'ai 3 voyages, objectif 5 -> (3/5)*100 = 60%
+        let percentage = 0;
+        if (nextTarget === 100) {
+            percentage = 100; // Barre pleine si max atteint
+        } else {
+            percentage = (tripCount / nextTarget) * 100;
+        }
 
         res.render('mes-demandes', { 
             user: req.session.user, 
@@ -866,6 +886,8 @@ app.get('/mes-demandes', isAuthenticated, async (req, res) => {
             loyalty: {
                 count: tripCount,
                 level: level,
+                nextTarget: nextTarget,
+                percentage: percentage,
                 color: badgeColor
             }
         });
@@ -1810,6 +1832,7 @@ app.post('/demande/envoyer', isAuthenticated, async (req, res) => {
     }
 
 });
+
 
 
 
