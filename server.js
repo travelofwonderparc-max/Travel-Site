@@ -1719,11 +1719,12 @@ app.get('/sitemap.xml', async (req, res) => {
     }
 });
 // --- IMPORTER UNE COMMANDE EXISTANTE ---
+// IMPORTER UNE COMMANDE (AVEC SÉCURITÉ EMAIL)
 app.post('/mes-demandes/import', isAuthenticated, async (req, res) => {
     try {
-        const { reservationNumber } = req.body;
+        const { reservationNumber, emailVerification } = req.body;
         
-        // 1. On cherche la commande
+        // 1. On cherche la commande par son numéro
         const order = await Order.findOne({ reservationNumber: reservationNumber.trim() });
 
         if (!order) {
@@ -1731,18 +1732,18 @@ app.post('/mes-demandes/import', isAuthenticated, async (req, res) => {
             return res.redirect('/mes-demandes');
         }
 
-        // 2. Sécurité : Vérifier que l'email correspond (ou que la commande n'a pas déjà un user)
-        // Ici, on vérifie si l'email de la commande est le même que celui du compte connecté
-        if (order.userEmail !== req.session.user.email) {
-            req.flash('error_msg', 'Cette commande ne correspond pas à votre adresse email.');
+        // 2. SÉCURITÉ : L'email saisi doit correspondre à celui de la commande
+        // (Pour éviter que quelqu'un vole la commande d'un autre)
+        if (order.userEmail.toLowerCase() !== emailVerification.toLowerCase().trim()) {
+            req.flash('error_msg', 'L\'email ne correspond pas à cette réservation.');
             return res.redirect('/mes-demandes');
         }
 
-        // 3. On rattache la commande à l'utilisateur
+        // 3. On rattache la commande
         order.userId = req.session.user._id;
         await order.save();
 
-        req.flash('success_msg', 'Commande importée avec succès ! 🎉');
+        req.flash('success_msg', 'Réservation importée avec succès ! 🎉');
         res.redirect('/mes-demandes');
 
     } catch (err) {
@@ -1809,6 +1810,7 @@ app.post('/demande/envoyer', isAuthenticated, async (req, res) => {
     }
 
 });
+
 
 
 
