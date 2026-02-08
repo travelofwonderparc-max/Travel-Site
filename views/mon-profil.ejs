@@ -1,0 +1,197 @@
+<%- include('partials/header') %>
+
+<div class="container" style="padding: 50px 20px;">
+    
+    <div style="margin-bottom: 40px;">
+        <h1 class="section-title">Mon Profil <span>Voyageur</span></h1>
+        <p style="color: #666;">Gérez vos informations, vos réseaux et vos compagnons de voyage.</p>
+    </div>
+
+    <% if(success_msg != '') { %>
+        <div class="alert alert-success" style="background: #d4edda; color: #155724; padding: 15px; margin-bottom: 20px; border-radius: 5px;">✅ <%= success_msg %></div>
+    <% } %>
+    <% if(locals.error_msg && error_msg != '') { %>
+        <div class="alert alert-danger" style="background: #f8d7da; color: #721c24; padding: 15px; margin-bottom: 20px; border-radius: 5px;">⚠️ <%= error_msg %></div>
+    <% } %>
+
+    <div style="display: flex; flex-wrap: wrap; gap: 40px;">
+
+        <div style="flex: 2; min-width: 300px; background: white; padding: 30px; border-radius: 15px; box-shadow: 0 5px 15px rgba(0,0,0,0.05);">
+            <h2 style="border-bottom: 2px solid #eee; padding-bottom: 10px; margin-bottom: 20px;">📝 Mes Informations</h2>
+            
+            <form action="/mon-profil/update" method="POST">
+                
+                <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 20px;">
+                    <div class="input-group">
+                        <label>Nom & Prénom</label>
+                        <input type="text" name="name" value="<%= user.name %>" required>
+                    </div>
+                    <div class="input-group">
+                        <label>Email (Connexion)</label>
+                        <input type="email" name="email" value="<%= user.email %>" required>
+                    </div>
+                    
+                    <div class="input-group">
+                        <label>Sexe</label>
+                        <select name="gender">
+                            <option value="M" <%= user.gender == 'M' ? 'selected' : '' %>>Homme</option>
+                            <option value="F" <%= user.gender == 'F' ? 'selected' : '' %>>Femme</option>
+                            <option value="Autre" <%= user.gender == 'Autre' ? 'selected' : '' %>>Autre</option>
+                        </select>
+                    </div>
+
+                    <div class="input-group">
+                        <label>Date de Naissance</label>
+                        <% let dob = user.birthDate ? new Date(user.birthDate).toISOString().split('T')[0] : ''; %>
+                        <input type="date" name="birthDate" value="<%= dob %>">
+                    </div>
+
+                    <div class="input-group">
+                        <label>Téléphone</label>
+                        <input type="text" name="phone" value="<%= user.phone %>" placeholder="+33 6...">
+                    </div>
+                    
+                    <div class="input-group">
+                        <label>Adresse Postale</label>
+                        <input type="text" name="address" value="<%= user.address %>" placeholder="Votre adresse complète">
+                    </div>
+                </div>
+
+                <hr style="margin: 30px 0; border: 0; border-top: 1px solid #eee;">
+                <div class="input-group">
+                    <label>Instagram (Pseudo)</label>
+                    <div style="display: flex; align-items: center; background: #fff; border: 1px solid #ccc; border-radius: 5px; padding-left: 10px;">
+                        <span style="color: #E1306C; font-weight: bold; font-size: 1.2rem;">@</span>
+                        <input type="text" name="instagram" value="<%= user.instagram %>" placeholder="mon_pseudo_voyage" style="border: none; outline: none; width: 100%;">
+                    </div>
+                </div>
+
+                <h3 style="font-size: 1.1rem; color: #c0392b; margin-bottom: 15px; margin-top: 30px;">🚨 Urgence & Santé</h3>
+                
+                <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 20px;">
+                    <div class="input-group">
+                        <label>Contact d'urgence (Nom)</label>
+                        <input type="text" name="emergencyName" value="<%= user.emergencyContact ? user.emergencyContact.name : '' %>">
+                    </div>
+                    <div class="input-group">
+                        <label>Contact d'urgence (Tél)</label>
+                        <input type="text" name="emergencyPhone" value="<%= user.emergencyContact ? user.emergencyContact.phone : '' %>">
+                    </div>
+                </div>
+
+                <div class="input-group" style="margin-top: 15px;">
+                    <label>Problèmes médicaux / Allergies / Handicap</label>
+                    <textarea name="medicalInfo" rows="2" placeholder="Ex: Allergie arachides, besoin accès PMR..."><%= user.medicalInfo %></textarea>
+                </div>
+
+                <hr style="margin: 30px 0; border: 0; border-top: 1px solid #eee;">
+                <div class="input-group" style="background: #f9f9f9; padding: 15px; border-radius: 10px;">
+                    <label>🔒 Nouveau mot de passe (Laisser vide si inchangé)</label>
+                    <input type="password" name="newPassword" placeholder="********">
+                </div>
+
+                <button type="submit" class="btn-login" style="width: 100%; margin-top: 20px; background: var(--secondary);">💾 Enregistrer mes modifications</button>
+            </form>
+        </div>
+
+        <div style="flex: 1; min-width: 300px;">
+            
+            <div style="background: linear-gradient(135deg, #8e44ad 0%, #3498db 100%); color: white; padding: 30px; border-radius: 15px; margin-bottom: 30px; box-shadow: 0 5px 15px rgba(0,0,0,0.1);">
+                <h3 style="margin-top: 0;">🌍 Mes Amis Voyageurs</h3>
+                <p style="font-size: 0.9rem; opacity: 0.9;">Ajoutez vos amis inscrits sur le site !</p>
+
+                <ul style="list-style: none; padding: 0;">
+                    <% if (user.friends && user.friends.length > 0) { %>
+                        <% user.friends.forEach(friend => { %>
+                            <li style="background: rgba(255,255,255,0.2); padding: 10px; border-radius: 8px; margin-bottom: 10px; display: flex; justify-content: space-between; align-items: center;">
+                                <div style="display: flex; align-items: center; gap: 10px;">
+                                    <div style="background: white; color: #8e44ad; width: 30px; height: 30px; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-weight: bold;">
+                                        <%= friend.name ? friend.name.charAt(0) : '?' %>
+                                    </div>
+                                    
+                                    <div>
+                                        <strong><%= friend.name || 'Ami inconnu' %></strong>
+                                        
+                                        <% if (friend.instagram) { %>
+                                            <a href="https://instagram.com/<%= friend.instagram.replace('@', '') %>" target="_blank" style="color: #fff; text-decoration: none; font-size: 0.8rem; margin-left: 5px; background: #E1306C; padding: 2px 6px; border-radius: 4px;">
+                                                📷 Insta
+                                            </a>
+                                        <% } %>
+                                    </div>
+                                </div>
+                                <a href="/mon-profil/delete-friend/<%= friend._id %>" style="color: white; text-decoration: none; font-weight: bold; font-size: 1.2rem;">×</a>
+                            </li>
+                        <% }) %>
+                    <% } else { %>
+                        <p style="font-style: italic; opacity: 0.8; font-size: 0.9rem;">Aucun ami connecté pour l'instant.</p>
+                    <% } %>
+                </ul>
+
+                <hr style="border-color: rgba(255,255,255,0.3); margin: 20px 0;">
+                
+                <form action="/mon-profil/add-friend" method="POST">
+                    <h4 style="font-size: 1rem; margin-bottom: 10px;">Ajouter un ami</h4>
+                    <div style="display: flex; gap: 10px;">
+                        <input type="email" name="email" placeholder="Son email (ex: ami@mail.com)" required style="flex: 1; padding: 10px; border-radius: 5px; border: none;">
+                        <button type="submit" style="background: #2c3e50; color: white; border: none; padding: 0 15px; border-radius: 5px; cursor: pointer; font-weight: bold;">+</button>
+                    </div>
+                </form>
+            </div>
+
+            <div style="background: white; padding: 25px; border-radius: 15px; box-shadow: 0 5px 15px rgba(0,0,0,0.05);">
+                <h3 style="color: #555; margin-top: 0; font-size: 1.3rem;">👨‍👩‍👧‍👦 Carnet Famille</h3>
+                <p style="font-size: 0.8rem; color: #888;">Pour réserver plus vite (Enfants, Conjoint...).</p>
+                
+                <ul style="list-style: none; padding: 0;">
+                    <% if (user.companions && user.companions.length > 0) { %>
+                        <% user.companions.forEach(comp => { %>
+                            <li style="border-bottom: 1px solid #eee; padding: 10px 0; display: flex; justify-content: space-between; align-items: center;">
+                                <div>
+                                    <strong><%= comp.name %></strong>
+                                    <div style="font-size: 0.8rem; color: #666;">
+                                        <%= comp.relation %> | <%= comp.gender %>
+                                        <% if(comp.birthDate) { %>
+                                            | <%= new Date().getFullYear() - new Date(comp.birthDate).getFullYear() %> ans
+                                        <% } %>
+                                    </div>
+                                </div>
+                                <a href="/mon-profil/delete-companion/<%= comp._id %>" style="color: #c0392b; text-decoration: none; font-weight: bold;">×</a>
+                            </li>
+                        <% }) %>
+                    <% } else { %>
+                        <p style="color: #999; font-style: italic;">Liste vide.</p>
+                    <% } %>
+                </ul>
+
+                <hr style="margin: 15px 0; border-top: 1px solid #eee;">
+                
+                <form action="/mon-profil/add-companion" method="POST">
+                    <h4 style="font-size: 1rem; margin-bottom: 10px;">Ajouter une personne</h4>
+                    
+                    <input type="text" name="name" placeholder="Nom Complet" required style="width: 100%; padding: 8px; border: 1px solid #ddd; border-radius: 5px; margin-bottom: 10px;">
+                    
+                    <div style="display: flex; gap: 10px; margin-bottom: 10px;">
+                        <select name="gender" style="padding: 8px; border: 1px solid #ddd; border-radius: 5px;">
+                            <option value="M">H</option>
+                            <option value="F">F</option>
+                        </select>
+                        <select name="relation" style="flex: 1; padding: 8px; border: 1px solid #ddd; border-radius: 5px;">
+                            <option value="Enfant">Enfant</option>
+                            <option value="Conjoint">Conjoint(e)</option>
+                            <option value="Parent">Parent</option>
+                            <option value="Autre">Autre</option>
+                        </select>
+                    </div>
+
+                    <input type="date" name="birthDate" required style="width: 100%; padding: 8px; border: 1px solid #ddd; border-radius: 5px; margin-bottom: 10px;">
+
+                    <button type="submit" style="width: 100%; background: #eee; color: #333; border: none; padding: 10px; border-radius: 5px; cursor: pointer; font-weight: bold;">+ Ajouter au carnet</button>
+                </form>
+            </div>
+
+        </div>
+
+    </div>
+</div>
+
+<%- include('partials/footer') %>

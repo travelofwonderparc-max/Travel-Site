@@ -1,0 +1,39 @@
+<%- include('partials/header') %>
+
+<div class="container" style="padding: 50px 20px; max-width: 600px;">
+    <div style="text-align: center; margin-bottom: 30px;">
+        <h1>⭐ Votre avis compte !</h1>
+        <p>Comment s'est passé votre voyage : <strong><%= trip.titre %></strong> ?</p>
+    </div>
+
+    <div style="background: white; padding: 30px; border-radius: 15px; box-shadow: 0 5px 15px rgba(0,0,0,0.1);">
+        <form action="/mes-demandes/avis/<%= trip._id %>" method="POST">
+            
+            <div class="input-group" style="margin-bottom: 20px;">
+                <label style="font-weight: bold; display: block; margin-bottom: 10px;">Votre Note globale</label>
+                <select name="rating" required style="width: 100%; padding: 10px; border-radius: 5px; border: 1px solid #ccc; font-size: 1.1rem;">
+                    <option value="5">★★★★★ - Incroyable (5/5)</option>
+                    <option value="4">★★★★☆ - Très bien (4/5)</option>
+                    <option value="3">★★★☆☆ - Bien (3/5)</option>
+                    <option value="2">★★☆☆☆ - Moyen (2/5)</option>
+                    <option value="1">★☆☆☆☆ - Déçu (1/5)</option>
+                </select>
+            </div>
+
+            <div class="input-group" style="margin-bottom: 20px;">
+                <label style="font-weight: bold; display: block; margin-bottom: 10px;">Votre commentaire</label>
+                <textarea name="comment" rows="5" placeholder="Racontez-nous vos meilleurs souvenirs..." required style="width: 100%; padding: 10px; border-radius: 5px; border: 1px solid #ccc; font-family: sans-serif;"></textarea>
+            </div>
+
+            <button type="submit" class="btn-login" style="width: 100%; background: #f1c40f; color: #333; font-weight: bold;">
+                Publier mon avis
+            </button>
+            
+            <div style="text-align: center; margin-top: 15px;">
+                <a href="/mes-demandes" style="color: #666; text-decoration: none;">Annuler</a>
+            </div>
+        </form>
+    </div>
+</div>
+
+<%- include('partials/footer') %>

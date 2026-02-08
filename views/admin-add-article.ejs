@@ -1,0 +1,35 @@
+<%- include('partials/header') %>
+
+<script src="https://cdn.ckeditor.com/4.22.1/standard/ckeditor.js"></script>
+
+<div class="container" style="padding: 50px 20px; max-width: 900px;">
+    <h1>📝 Rédiger un nouvel article</h1>
+    
+    <form action="/admin/blog/add" method="POST" style="background: white; padding: 30px; border-radius: 15px; box-shadow: 0 5px 15px rgba(0,0,0,0.1);">
+        
+        <div class="input-group">
+            <label>Titre de l'article</label>
+            <input type="text" name="title" placeholder="Ex: Les secrets de la Reine des Neiges" required>
+        </div>
+
+        <div class="input-group">
+            <label>Image de couverture (Nom du fichier)</label>
+            <input type="text" name="image" placeholder="Ex: frozen-2026.jpg" required>
+            <small style="color: #666;">Mettez l'image dans le dossier public/img d'abord.</small>
+        </div>
+
+        <div class="input-group">
+            <label>Contenu de l'article</label>
+            <textarea name="content" placeholder="Écrivez votre article ici..."></textarea>
+        </div>
+
+        <button type="submit" class="btn-login" style="width: 100%; margin-top: 20px; background: var(--secondary);">Publier l'article</button>
+    </form>
+</div>
+
+<script>
+    // On dit à CKEditor de remplacer la zone "content" par l'éditeur Word
+    CKEDITOR.replace( 'content' );
+</script>
+
+<%- include('partials/footer') %>

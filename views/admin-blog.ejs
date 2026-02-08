@@ -1,0 +1,44 @@
+<%- include('partials/header') %>
+
+<div class="container" style="padding: 50px 20px;">
+    <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 30px;">
+        <h1>📰 Gestion du Blog</h1>
+        <div>
+            <a href="/admin" class="btn-login" style="background: #666;">← Retour Admin</a>
+            <a href="/admin/blog/add" class="btn-login" style="background: var(--secondary);">+ Nouvel Article</a>
+        </div>
+    </div>
+
+    <table style="width: 100%; border-collapse: collapse; background: white; box-shadow: 0 5px 15px rgba(0,0,0,0.05);">
+        <thead style="background: #333; color: white;">
+            <tr>
+                <th style="padding: 15px; text-align: left;">Image</th>
+                <th style="padding: 15px; text-align: left;">Titre</th>
+                <th style="padding: 15px; text-align: left;">Date</th>
+                <th style="padding: 15px; text-align: right;">Actions</th>
+            </tr>
+        </thead>
+        <tbody>
+            <% if (articles.length === 0) { %>
+                <tr><td colspan="4" style="padding: 20px; text-align: center;">Aucun article.</td></tr>
+            <% } else { %>
+                <% articles.forEach(article => { %>
+                    <tr style="border-bottom: 1px solid #eee;">
+                        <td style="padding: 10px;">
+                            <img src="/img/<%= article.image %>" style="width: 50px; height: 50px; object-fit: cover; border-radius: 5px;">
+                        </td>
+                        <td style="padding: 10px; font-weight: bold;"><%= article.title %></td>
+                        <td style="padding: 10px; color: #666;"><%= new Date(article.createdAt).toLocaleDateString() %></td>
+                        <td style="padding: 10px; text-align: right;">
+                            <a href="/blog/<%= article._id %>" target="_blank" style="margin-right: 10px; text-decoration: none;">👁️ Voir</a>
+                            <a href="/admin/blog/edit/<%= article._id %>" style="margin-right: 10px; text-decoration: none; color: orange; font-weight: bold;">✏️ Modifier</a>
+                            <a href="/admin/blog/delete/<%= article._id %>" onclick="return confirm('Supprimer cet article ?')" style="text-decoration: none; color: red; font-weight: bold;">🗑️ Supprimer</a>
+                        </td>
+                    </tr>
+                <% }) %>
+            <% } %>
+        </tbody>
+    </table>
+</div>
+
+<%- include('partials/footer') %>

@@ -1,0 +1,77 @@
+<%- include('partials/header') %>
+
+<div class="container" style="padding: 50px 20px;">
+    
+    <div style="display: flex; justify-content: space-between; align-items: center;">
+        <h1>⚙️ Gestion : <%= trip.titre %></h1>
+        <a href="/admin/departs" class="btn-login" style="background: #666;">← Retour liste</a>
+    </div>
+
+    <div style="background: #f8f9fa; padding: 20px; border-radius: 10px; margin-top: 20px; border: 1px solid #ddd;">
+        <h3>Paramètres du voyage</h3>
+        <form action="/admin/departs/update/<%= trip._id %>" method="POST" style="display: flex; gap: 20px; align-items: flex-end; flex-wrap: wrap;">
+            
+            <div>
+                <label>Date de départ</label><br>
+                <input type="text" name="dateDepart" value="<%= trip.dateDepart %>" style="padding: 8px;">
+            </div>
+
+            <div>
+                <label>Capacité Totale (Places)</label><br>
+                <input type="number" name="capacity" value="<%= trip.capacity %>" style="padding: 8px; width: 80px;">
+            </div>
+
+            <div>
+                <label>Statut</label><br>
+                <select name="status" style="padding: 8px;">
+                    <option value="Ouvert" <%= trip.status=='Ouvert'?'selected':'' %>>🟢 Ouvert</option>
+                    <option value="Complet" <%= trip.status=='Complet'?'selected':'' %>>🔴 Complet</option>
+                    <option value="Fermé" <%= trip.status=='Fermé'?'selected':'' %>>🔒 Fermé (Caché)</option>
+                </select>
+            </div>
+
+            <button type="submit" class="btn-login" style="padding: 8px 15px; font-size: 0.9rem;">💾 Sauvegarder changements</button>
+        </form>
+    </div>
+
+    <h3 style="margin-top: 40px;">👥 Liste des Inscrits (<%= trip.filled %> / <%= trip.capacity %>)</h3>
+    
+    <table style="width: 100%; border-collapse: collapse; background: white; box-shadow: 0 5px 15px rgba(0,0,0,0.05);">
+        <thead style="background: #333; color: white;">
+            <tr>
+                <th style="padding: 10px;">Nom</th>
+                <th style="padding: 10px;">Email</th>
+                <th style="padding: 10px;">Téléphone</th>
+                <th style="padding: 10px;">Paiement</th>
+                <th style="padding: 10px;">Action</th>
+            </tr>
+        </thead>
+        <tbody>
+            <% if(trip.participants.length === 0) { %>
+                <tr><td colspan="5" style="text-align: center; padding: 20px;">Aucun inscrit pour le moment.</td></tr>
+            <% } else { %>
+                <% trip.participants.forEach(p => { %>
+                    <tr style="border-bottom: 1px solid #eee;">
+                        <td style="padding: 10px;"><strong><%= p.name %></strong></td>
+                        <td style="padding: 10px;"><%= p.email %></td>
+                        <td style="padding: 10px;"><%= p.phone || '-' %></td>
+                        <td style="padding: 10px;">
+                            <span style="background: #e3f2fd; color: #0d47a1; padding: 2px 8px; border-radius: 4px; font-size: 0.85rem;">
+                                <%= p.paymentMethod || 'Non défini' %>
+                            </span>
+                        </td>
+                        <td style="padding: 10px;">
+                            <a href="/admin/departs/kick/<%= trip._id %>/<%= p._id %>" 
+                               onclick="return confirm('Êtes-vous sûr de vouloir supprimer <%= p.name %> ? Cela libérera une place.')"
+                               style="color: red; text-decoration: none; font-weight: bold;">
+                               ❌ Éjecter
+                            </a>
+                        </td>
+                    </tr>
+                <% }) %>
+            <% } %>
+        </tbody>
+    </table>
+
+</div>
+<%- include('partials/footer') %>

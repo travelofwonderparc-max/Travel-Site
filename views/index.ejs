@@ -1,0 +1,124 @@
+<%- include('partials/header') %>
+
+<header class="hero">
+    <h1>L'AVENTURE VOUS ATTEND</h1>
+    <p>Spécialiste des séjours Parcs d'Attractions & Destinations de Rêve</p>
+    
+    <form class="search-bar" action="/search" method="GET">
+    <input type="text" name="q" class="search-input" placeholder="Où voulez-vous aller ?" required>
+    <button type="submit" class="search-btn">🔍</button>
+    </form>
+</header>
+
+<section class="container">
+    <div style="text-align: center; margin-bottom: 50px;">
+        <h2 class="section-title">Nos Séjours <span>Parcs & Sensations</span></h2>
+        <p>Découvrez notre sélection exclusive de voyages clés en main.</p>
+    </div>
+    <div class="scroll-container">
+        <% voyages.forEach(voyage => { %>
+            <div class="card">
+                <div class="card-img" style="background-image: url('/img/<%= voyage.img %>'); background-color: #ddd;"></div>
+                
+                <div class="card-content">
+                    <span class="card-badge">Parcs & Loisirs</span>
+                    <h3><%= voyage.titre %></h3>
+                    <p class="card-desc"><%= voyage.description %></p>
+                    
+                    <div class="card-footer">
+                        <div>
+                            <span style="font-size:0.8rem; color:#888;">Dès</span>
+                            <span class="price"><%= voyage.prixBase %>€</span>
+                        </div>
+                        <a href="/sejour/<%= voyage._id %>" class="btn-login" style="padding: 8px 15px; font-size:0.8rem;">Détails</a>
+                    </div>
+                </div>
+            </div>
+        <% }) %>
+        
+    </div>
+</section>
+<% if (typeof featuredTrips !== 'undefined' && featuredTrips.length > 0) { %>
+        <section style="padding: 50px 20px; background: #f9f9f9;">
+            <div class="container">
+                <h2 class="section-title" style="text-align: center; margin-bottom: 40px;">Nos Séjours <span>À la Une</span> 🔥</h2>
+                
+                <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(300px, 1fr)); gap: 30px;">
+                    <% featuredTrips.forEach(trip => { %>
+                        <div class="card" style="border: none; overflow: hidden; position: relative; background: white; border-radius: 15px; box-shadow: 0 10px 20px rgba(0,0,0,0.05); display: flex; flex-direction: column;">
+                            
+                            <div style="height: 200px; overflow: hidden;">
+                                <img src="/img/<%= trip.image %>" alt="<%= trip.titre %>" style="width: 100%; height: 100%; object-fit: cover; transition: 0.3s;">
+                            </div>
+
+                            <div style="padding: 20px; flex-grow: 1; display: flex; flex-direction: column;">
+                                <h3 style="margin: 0; font-size: 1.4rem; color: #333;"><%= trip.titre %></h3>
+                                <p style="color: #d35400; font-weight: bold; font-size: 0.9rem; margin: 5px 0 15px 0;">
+                                    📅 Départ : <%= trip.dateDepart %>
+                                </p>
+                                
+                                <div style="margin-bottom: 20px; background: #f1f2f6; padding: 10px; border-radius: 8px;">
+                                    <div style="display: flex; justify-content: space-between; font-size: 0.85rem; margin-bottom: 5px;">
+                                        <span>Inscrits : <strong><%= trip.filled %></strong></span>
+                                        <% let remaining = trip.capacity - trip.filled; %>
+                                        <span style="color: <%= remaining < 5 ? '#e74c3c' : '#27ae60' %>; font-weight: bold;">
+                                            Reste <%= remaining %> places
+                                        </span>
+                                    </div>
+                                    
+                                    <div style="background: #ddd; height: 8px; border-radius: 4px; overflow: hidden;">
+                                        <% 
+                                            let percent = (trip.filled / trip.capacity) * 100;
+                                            let color = '#2ecc71'; // Vert
+                                            if(percent > 50) color = '#f39c12'; // Orange
+                                            if(percent > 80) color = '#e74c3c'; // Rouge
+                                        %>
+                                        <div style="width: <%= percent %>%; background: <%= color %>; height: 100%;"></div>
+                                    </div>
+                                </div>
+
+                                <div style="margin-top: auto; display: flex; justify-content: space-between; align-items: center;">
+                                    <span style="font-size: 1.3rem; font-weight: bold; color: #2c3e50;"><%= trip.prix %> €</span>
+                                    
+                                    <% if (trip.status === 'Complet' || trip.filled >= trip.capacity) { %>
+                                        <span style="color: #e74c3c; font-weight: bold; background: #fadbd8; padding: 5px 10px; border-radius: 5px;">COMPLET</span>
+                                    <% } else { %>
+                                        <a href="/departs-groupes/reserve/<%= trip._id %>" class="btn-login" style="padding: 8px 15px; font-size: 0.9rem; background: var(--secondary);">Réserver</a>
+                                    <% } %>
+                                </div>
+                            </div>
+
+                            <div style="position: absolute; top: 15px; right: 15px; background: #ffca28; color: #333; padding: 5px 10px; border-radius: 20px; font-weight: bold; font-size: 0.8rem; box-shadow: 0 2px 5px rgba(0,0,0,0.2);">
+                                ⭐ Star
+                            </div>
+
+                        </div>
+                    <% }) %>
+                </div>
+                
+                <div style="text-align: center; margin-top: 30px;">
+                    <a href="/departs-groupes" style="color: #666; text-decoration: underline;">Voir tous les départs groupés →</a>
+                </div>
+            </div>
+        </section>
+    <% } %>
+
+<section style="background-color: white; padding: 60px 0;">
+    <div class="container" style="display: flex; gap: 40px; justify-content: center; flex-wrap: wrap;">
+        
+        <div style="background: #0F2440; color: white; padding: 40px; border-radius: 20px; flex: 1; min-width: 300px; text-align: center;">
+            <h2>Horizon By Travel</h2>
+            <p>Des voyages hors des sentiers battus pour les explorateurs.</p>
+            <a href="/horizon" class="btn-login" style="background: white; color: #0F2440 !important; margin-top: 20px; display: inline-block;">Découvrir</a>
+        </div>
+
+        <div style="background: #239BE7; color: white; padding: 40px; border-radius: 20px; flex: 1; min-width: 300px; text-align: center;">
+            <h2>Celeste By Travel</h2>
+            <p>Le luxe et le confort absolu pour des séjours d'exception.</p>
+            <a href="/celeste" class="btn-login" style="background: white; color: #239BE7 !important; margin-top: 20px; display: inline-block;">Découvrir</a>
+        </div>
+
+    </div>
+</section>
+
+<%- include('partials/footer') %>

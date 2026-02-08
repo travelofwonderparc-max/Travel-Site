@@ -1,0 +1,115 @@
+<%- include('partials/header') %>
+
+<div style="height: 50vh; overflow: hidden; position: relative;">
+    <img src="/img/<%= trip.image %>" style="width: 100%; height: 100%; object-fit: cover;">
+    <div style="position: absolute; bottom: 0; left: 0; width: 100%; background: linear-gradient(transparent, rgba(0,0,0,0.8)); padding: 40px 20px; color: white;">
+        <div class="container">
+            <h1 style="font-size: 3rem; margin: 0;"><%= trip.titre %></h1>
+            <div style="font-size: 1.2rem; margin-top: 10px; color: #f1c40f;">
+                <% for(let i=1; i<=5; i++) { %>
+                    <%= i <= Math.round(averageRating) ? '★' : '☆' %>
+                <% } %>
+                <span style="color: white; font-size: 1rem; margin-left: 10px;">
+                    (<%= reviews.length %> avis)
+                </span>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div class="container" style="padding: 50px 20px; display: flex; flex-wrap: wrap; gap: 40px;">
+
+    <div style="flex: 2; min-width: 300px;">
+        
+        <h2 style="color: var(--secondary);">À propos du voyage</h2>
+        <p style="line-height: 1.6; font-size: 1.1rem; color: #555;">
+            <%= trip.description %>
+        </p>
+        <% if (locals.friendsGoing && friendsGoing.length > 0) { %>
+            <div style="background: #e8f6fd; color: #2980b9; padding: 15px; border-radius: 10px; margin-bottom: 20px; border: 1px solid #bbe1f8; display: flex; align-items: center; gap: 15px;">
+                <div style="font-size: 2rem;">👯‍♀️</div>
+                <div>
+                    <strong>Vos amis y vont aussi !</strong><br>
+                    <span style="font-size: 0.9rem;">
+                        <%= friendsGoing.join(', ') %> participent à ce voyage.
+                    </span>
+                </div>
+            </div>
+        <% } %>
+        <p><strong>Départ le :</strong> <%= trip.dateDepart %></p>
+
+        <hr style="margin: 40px 0; border: 0; border-top: 1px solid #eee;">
+
+        <h3>⭐ Avis des Voyageurs (<%= averageRating %>/5)</h3>
+
+        <% if (canReview) { %>
+            <div style="background: #f8f9fa; padding: 20px; border-radius: 10px; margin-bottom: 30px; border: 1px solid #ddd;">
+                <h4>Racontez votre expérience !</h4>
+                <form action="/voyage/<%= trip._id %>/review" method="POST">
+                    <div style="margin-bottom: 10px;">
+                        <label>Note :</label>
+                        <select name="rating" style="padding: 5px;">
+                            <option value="5">★★★★★ - Inoubliable</option>
+                            <option value="4">★★★★☆ - Très bien</option>
+                            <option value="3">★★★☆☆ - Bien</option>
+                            <option value="2">★★☆☆☆ - Moyen</option>
+                            <option value="1">★☆☆☆☆ - Déçu</option>
+                        </select>
+                    </div>
+                    <textarea name="comment" rows="3" placeholder="Qu'avez-vous aimé ?" required style="width: 100%; padding: 10px; margin-bottom: 10px;"></textarea>
+                    <button type="submit" class="btn-login" style="background: var(--secondary);">Publier mon avis</button>
+                </form>
+            </div>
+        <% } %>
+
+        <% if (reviews.length === 0) { %>
+            <p style="color: #777;">Aucun avis pour le moment. Soyez le premier !</p>
+        <% } else { %>
+            <% reviews.forEach(review => { %>
+                <div style="margin-bottom: 20px; padding-bottom: 20px; border-bottom: 1px solid #eee;">
+                    <div style="display: flex; align-items: center; justify-content: space-between;">
+                        <strong><%= review.userName %></strong>
+                        <span style="color: #f1c40f; letter-spacing: 2px;">
+                            <% for(let i=0; i<review.rating; i++) { %>★<% } %>
+                        </span>
+                    </div>
+                    <p style="margin: 5px 0; color: #444;"><%= review.comment %></p>
+                    <small style="color: #999;">Posté le <%= new Date(review.createdAt).toLocaleDateString() %></small>
+                </div>
+            <% }) %>
+        <% } %>
+
+    </div>
+
+    <div style="flex: 1; min-width: 250px;">
+        <div style="background: white; padding: 30px; border-radius: 15px; box-shadow: 0 5px 20px rgba(0,0,0,0.1); position: sticky; top: 20px;">
+            <div style="font-size: 2rem; font-weight: bold; color: #333; margin-bottom: 20px;">
+                <%= trip.prix %> € <span style="font-size: 1rem; font-weight: normal; color: #666;">/ pers</span>
+            </div>
+
+            <% let remaining = trip.capacity - trip.filled; %>
+            <div style="margin-bottom: 20px;">
+                <% if (remaining <= 0) { %>
+                    <div style="color: red; font-weight: bold;">⚠️ COMPLET</div>
+                <% } else { %>
+                    <div style="color: green; font-weight: bold;">✅ Il reste <%= remaining %> places</div>
+                <% } %>
+            </div>
+
+            <% if (remaining > 0) { %>
+                <a href="/departs-groupes/reserve/<%= trip._id %>" class="btn-login" style="display: block; text-align: center; width: 100%; padding: 15px; font-size: 1.1rem; background: #e67e22;">
+                    🎫 Réserver maintenant
+                </a>
+            <% } else { %>
+                <button disabled style="width: 100%; padding: 15px; background: #ccc; border: none; color: white;">Indisponible</button>
+            <% } %>
+
+            <p style="text-align: center; margin-top: 15px; font-size: 0.8rem; color: #999;">
+                Paiement sécurisé & Annulation flexible sous conditions.
+            </p>
+        </div>
+    </div>
+
+</div>
+
+<%- include('partials/footer') %>

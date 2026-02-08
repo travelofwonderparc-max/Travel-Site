@@ -1,0 +1,36 @@
+<%- include('partials/header') %>
+<div class="container" style="max-width: 600px; padding: 50px 20px;">
+    <h1>🎟️ Confirmer l'inscription</h1>
+    <div style="background: white; padding: 30px; border-radius: 15px; box-shadow: 0 5px 15px rgba(0,0,0,0.1);">
+        
+        <h3 style="margin-top:0;"><%= trip.titre %></h3>
+        <p>Date : <strong><%= trip.dateDepart %></strong> | Prix : <strong><%= trip.prix %> €</strong></p>
+        <hr>
+
+        <form action="/departs-groupes/confirm/<%= trip._id %>" method="POST">
+            
+            <div class="input-group">
+                <label>Nom & Prénom du voyageur</label>
+                <input type="text" name="fullName" value="<%= user.name %>" required>
+            </div>
+
+            <div class="input-group">
+                <label>Numéro de téléphone (Mobile)</label>
+                <input type="tel" name="phone" placeholder="06 12 34 56 78" required>
+            </div>
+
+            <div class="input-group">
+                <label>Moyen de paiement souhaité</label>
+                <select name="paymentMethod">
+                    <option value="Carte Bancaire">Carte Bancaire (Lien à recevoir)</option>
+                    <option value="Virement">Virement Bancaire</option>
+                    <option value="Chèques Vacances">Chèques Vacances (ANCV)</option>
+                    <option value="Espèces">Espèces (Agence)</option>
+                </select>
+            </div>
+
+            <button type="submit" class="btn-login" style="width: 100%; margin-top: 20px;">Valider ma place</button>
+        </form>
+    </div>
+</div>
+<%- include('partials/footer') %>

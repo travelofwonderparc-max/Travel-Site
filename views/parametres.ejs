@@ -1,0 +1,35 @@
+<%- include('partials/header') %>
+<div class="container" style="max-width: 600px; padding: 50px 20px;">
+    <h1 class="section-title">Mes Paramètres</h1>
+    
+    <% if(success_msg != '') { %><div class="alert alert-success"><%= success_msg %></div><% } %>
+
+    <form action="/parametres/update" method="POST" style="background: white; padding: 30px; border-radius: 15px; box-shadow: 0 5px 20px rgba(0,0,0,0.05);">
+        
+        <div class="input-group">
+            <label>Nom Complet</label>
+            <input type="text" name="name" value="<%= user.name %>" required style="width:100%; padding:10px;">
+        </div>
+
+        <div class="input-group">
+            <label>Email</label>
+            <input type="email" name="email" value="<%= user.email %>" required style="width:100%; padding:10px;">
+        </div>
+
+        <% if (user.role === 'pro') { %>
+            <hr>
+            <h3 style="color: var(--primary);">Informations Société</h3>
+            <div class="input-group">
+                <label>Nom de la Société / CE</label>
+                <input type="text" name="company" value="<%= user.company %>" style="width:100%; padding:10px;">
+            </div>
+            <div class="input-group">
+                <label>Numéro SIRET</label>
+                <input type="text" name="siret" value="<%= user.siret %>" style="width:100%; padding:10px;">
+            </div>
+        <% } %>
+
+        <button type="submit" class="btn-submit" style="margin-top: 20px;">💾 Enregistrer les modifications</button>
+    </form>
+</div>
+<%- include('partials/footer') %>

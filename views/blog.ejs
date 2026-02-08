@@ -1,0 +1,30 @@
+<%- include('partials/header') %>
+
+<div class="container" style="padding: 50px 20px;">
+    <div style="text-align: center; margin-bottom: 50px;">
+        <h1 class="section-title">Le Journal de <span>L'Aventure</span></h1>
+        <p>Actualités, conseils et secrets de Cast Members.</p>
+    </div>
+
+    <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(300px, 1fr)); gap: 30px;">
+        <% if (articles.length === 0) { %>
+            <p>Aucun article pour le moment.</p>
+        <% } else { %>
+            <% articles.forEach(article => { %>
+                <div class="card" style="border: none; overflow: hidden;">
+                    <img src="/img/<%= article.image %>" alt="<%= article.title %>" style="width: 100%; height: 200px; object-fit: cover;">
+                    <div style="padding: 20px;">
+                        <span style="color: #999; font-size: 0.8rem;"><%= new Date(article.createdAt).toLocaleDateString() %></span>
+                        <h3 style="margin: 10px 0;"><%= article.title %></h3>
+                        
+                        <p style="color: #666;"><%= article.content.substring(0, 100) %>...</p>
+                        
+                        <a href="/blog/<%= article._id %>" style="color: var(--secondary); font-weight: bold; text-decoration: none;">Lire la suite →</a>
+                    </div>
+                </div>
+            <% }) %>
+        <% } %>
+    </div>
+</div>
+
+<%- include('partials/footer') %>

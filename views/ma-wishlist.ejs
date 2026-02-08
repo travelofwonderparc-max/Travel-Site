@@ -1,0 +1,35 @@
+<%- include('partials/header') %>
+
+<div class="container" style="padding: 50px 20px;">
+    <h1 class="section-title">Mes <span>Favoris</span> ❤️</h1>
+    <p style="text-align: center; color: #666; margin-bottom: 40px;">Les voyages qui vous font rêver.</p>
+
+    <% if (trips.length === 0) { %>
+        <div style="text-align: center; padding: 50px;">
+            <h3>Votre liste est vide 😢</h3>
+            <p>Allez vite découvrir nos destinations !</p>
+            <a href="/departs-groupes" class="btn-login" style="background: var(--secondary);">Voir les voyages</a>
+        </div>
+    <% } else { %>
+        <div class="trip-grid">
+            <% trips.forEach(trip => { %>
+                <div class="trip-card">
+                    <img src="/img/<%= trip.image %>" alt="<%= trip.titre %>">
+                    <div class="trip-info">
+                        <h3><%= trip.titre %></h3>
+                        <p class="date">📅 <%= trip.dateDepart %></p>
+                        <div class="price-row">
+                            <span class="price"><%= trip.prix %>€</span>
+                            <div>
+                                <a href="/voyage/<%= trip._id %>" class="btn-reserver">Voir</a>
+                                <a href="/wishlist/toggle/<%= trip._id %>" style="text-decoration: none; margin-left: 10px; font-size: 1.2rem;">❌</a>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            <% }) %>
+        </div>
+    <% } %>
+</div>
+
+<%- include('partials/footer') %>

@@ -1,0 +1,123 @@
+<%- include('partials/header') %>
+<div class="search-container" style="text-align: center; margin-bottom: 40px;">
+        <form action="/departs-groupes" method="GET" style="display: inline-block; position: relative;">
+            <input type="text" name="search" placeholder="Où voulez-vous aller ? (ex: Japon, Disney...)" 
+                   value="<%= typeof search !== 'undefined' ? search : '' %>"
+                   style="padding: 15px 20px; width: 300px; border-radius: 50px; border: 1px solid #ddd; box-shadow: 0 5px 15px rgba(0,0,0,0.1); outline: none;">
+            
+            <button type="submit" style="position: absolute; right: 5px; top: 5px; background: var(--secondary); color: white; border: none; width: 40px; height: 40px; border-radius: 50%; cursor: pointer;">
+                🔍
+            </button>
+        </form>
+
+        <% if (typeof search !== 'undefined' && search !== '') { %>
+            <div style="margin-top: 10px;">
+                <a href="/departs-groupes" style="color: #666; text-decoration: none;">❌ Effacer la recherche</a>
+            </div>
+        <% } %>
+    </div>
+<div class="container" style="padding: 50px 20px; min-height: 80vh;">
+    
+    <div style="text-align: center; margin-bottom: 50px;">
+        <h1 class="section-title">Départs <span>Groupés</span></h1>
+        <p style="font-size: 1.2rem; color: #666;">Rejoignez nos prochaines aventures. Attention, places limitées !</p>
+    </div>
+
+    <% if (typeof trips === 'undefined' || trips.length === 0) { %>
+        <div style="text-align: center; padding: 50px; background: white; border-radius: 15px; box-shadow: 0 5px 15px rgba(0,0,0,0.1);">
+            <h3>Aucun départ prévu pour le moment.</h3>
+            <p>Revenez bientôt ou contactez-nous pour un devis sur mesure !</p>
+        </div>
+    <% } else { %>
+
+        <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(300px, 1fr)); gap: 30px;">
+            
+            <% trips.forEach(trip => { %>
+                <div class="card" style="border: none; overflow: hidden; display: flex; flex-direction: column; height: 100%; border-radius: 15px;">
+                    
+                    <div style="height: 200px; overflow: hidden; position: relative;">
+                        <img src="/img/<%= trip.image %>" alt="<%= trip.titre %>" style="width: 100%; height: 100%; object-fit: cover;">
+                        <% if (user) { %>
+                    <div style="position: absolute; top: 15px; right: 15px; z-index: 10;">
+                        <a href="/wishlist/toggle/<%= trip._id %>" style="text-decoration: none;">
+                            <% if (user.wishlist && user.wishlist.includes(trip._id.toString())) { %>
+                                <span style="font-size: 2rem; filter: drop-shadow(0 0 5px rgba(0,0,0,0.5));">❤️</span>
+                            <% } else { %>
+                                <span style="font-size: 2rem; filter: drop-shadow(0 0 5px rgba(0,0,0,0.5)); opacity: 0.8;">🤍</span>
+                            <% } %>
+                        </a>
+                    </div>
+                <% } %>
+                        <div style="position: absolute; bottom: 10px; right: 10px; background: var(--primary); color: white; padding: 5px 15px; border-radius: 20px; font-weight: bold;">
+                            <%= trip.prix %> €
+                        </div>
+
+                        <% if (trip.isFeatured) { %>
+                            <div style="position: absolute; top: 10px; left: 10px; background: #ffca28; color: #333; padding: 5px 10px; border-radius: 20px; font-weight: bold; font-size: 0.8rem;">
+                                ⭐ Star
+                            </div>
+                        <% } %>
+                    </div>
+
+                    <div style="padding: 25px; flex-grow: 1; display: flex; flex-direction: column;">
+                        
+                        <h2 style="margin: 0; font-size: 1.5rem; color: var(--secondary);"><%= trip.titre %></h2>
+                        <div style="color: #d35400; font-weight: bold; margin-top: 5px; font-size: 0.9rem;">
+                            📅 Départ : <%= trip.dateDepart %>
+                        </div>
+
+                        <p style="color: #666; font-size: 0.95rem; margin-top: 15px; flex-grow: 1;">
+                            <%= trip.description %>
+                        </p>
+
+                        <div style="margin-top: 20px; background: #f8f9fa; padding: 10px; border-radius: 8px;">
+                            <div style="display: flex; justify-content: space-between; font-size: 0.85rem; margin-bottom: 5px;">
+                                <span>Inscrits : <strong><%= trip.filled %></strong></span>
+                                <% let remaining = trip.capacity - trip.filled; %>
+                                <span style="color: <%= remaining < 5 ? 'red' : 'green' %>; font-weight: bold;">
+                                    Reste <%= remaining %> places
+                                </span>
+                            </div>
+                            <div style="background: #ddd; height: 8px; border-radius: 4px; overflow: hidden;">
+                                <% 
+                                    let percent = (trip.filled / trip.capacity) * 100;
+                                    let color = '#2ecc71'; 
+                                    if(percent > 50) color = '#f39c12'; 
+                                    if(percent > 80) color = '#e74c3c'; 
+                                %>
+                                <div style="width: <%= percent %>%; background: <%= color %>; height: 100%;"></div>
+                            </div>
+                        </div>
+
+                        <div style="margin-top: 25px;">
+                            <% if (trip.status === 'Complet' || trip.filled >= trip.capacity) { %>
+                                
+                                <button disabled style="width: 100%; padding: 12px; border: none; background: #e74c3c; color: white; border-radius: 5px; cursor: not-allowed; font-weight: bold; opacity: 0.7;">
+                                    🚫 COMPLET
+                                </button>
+
+                            <% } else { %>
+                                
+                                <% if (locals.user) { %>
+                                    <a href="/voyage/<%= trip._id %>" class="btn-login" style="display:block; text-align:center; text-decoration:none; background: var(--secondary);">
+                                        🎟️ Réserver ma place
+                                    </a>
+                                <% } else { %>
+                                    <a href="/login" class="btn-login" style="display: block; text-align: center; background: #34495e; text-decoration:none;">
+                                        🔐 Connectez-vous pour réserver
+                                    </a>
+                                <% } %>
+
+                            <% } %>
+                        </div>
+
+                    </div>
+                </div>
+            <% }) %>
+
+        </div>
+
+    <% } %>
+</div>
+
+<%- include('partials/footer') %>

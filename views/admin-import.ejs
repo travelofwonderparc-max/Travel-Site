@@ -1,0 +1,49 @@
+<%- include('partials/header') %>
+<div class="container" style="max-width: 600px; padding: 50px 20px;">
+    <h1>📂 Importer un Ancien Dossier</h1>
+    <p>Ce dossier sera créé sans compte utilisateur. Le client pourra le récupérer plus tard avec son email et le N° de résa.</p>
+
+    <form action="/admin/import" method="POST" style="background: white; padding: 30px; border-radius: 15px;">
+        
+        <div class="input-group">
+            <label>Nom du Client</label>
+            <input type="text" name="clientName" required placeholder="Ex: Jean Dupont">
+        </div>
+
+        <div class="input-group">
+            <label>Email du Client (Important pour la récupération)</label>
+            <input type="email" name="clientEmail" required placeholder="client@email.com">
+        </div>
+
+        <div class="input-group">
+            <label>Nom du Voyage</label>
+            <input type="text" name="tripTitle" required placeholder="Ex: Disneyland Paris 2024">
+        </div>
+
+        <div class="input-group">
+            <label>Date du voyage (Texte)</label>
+            <input type="text" name="tripDate" placeholder="Ex: Octobre 2024">
+        </div>
+
+        <div class="input-group">
+            <label>Prix Payé (€)</label>
+            <input type="number" name="price" required>
+        </div>
+
+        <div class="input-group">
+            <label>Statut Actuel</label>
+            <select name="status">
+                <option value="Terminée">Terminée (Voyage passé)</option>
+                <option value="Validée">Validée (À venir)</option>
+                <option value="Payée">Payée</option>
+            </select>
+        </div>
+        <div class="input-group">
+            <label>Nombre de Voyageurs</label>
+            <input type="number" name="nbPeople" value="1" required>
+        </div>
+
+        <button type="submit" class="btn-submit">📥 Importer le dossier</button>
+    </form>
+</div>
+<%- include('partials/footer') %>

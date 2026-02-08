@@ -1,0 +1,129 @@
+<%- include('partials/header') %>
+
+<div class="container" style="padding: 50px 20px; min-height: 80vh;">
+    
+    <div style="text-align: center; margin-bottom: 40px;">
+        <h1 class="section-title">Mon Espace <span>Voyageur</span></h1>
+        <p style="color: #666;">Retrouvez ici vos devis et vos réservations.</p>
+    </div>
+
+    <% if (locals.loyalty) { %>
+        <% 
+            let tier = 0;
+            if (loyalty.level === 'Wonder 1') tier = 1;
+            if (loyalty.level === 'Wonder 2') tier = 2;
+            if (loyalty.level === 'Wonder 3') tier = 3;
+        %>
+
+        <div style="background: linear-gradient(135deg, #1c1c1c 0%, #2c3e50 100%); color: white; padding: 40px 30px; border-radius: 20px; margin-bottom: 50px; box-shadow: 0 15px 30px rgba(0,0,0,0.3); position: relative; overflow: hidden;">
+            <div style="text-align: center; margin-bottom: 40px; position: relative; z-index: 2;">
+                <h2 style="font-size: 2.5rem; margin: 0; text-transform: uppercase; letter-spacing: 2px;">👑 Wonder Club</h2>
+                <div style="background: rgba(255,255,255,0.1); display: inline-block; padding: 10px 25px; border-radius: 50px; margin-top: 20px; border: 1px solid rgba(255,255,255,0.2);">
+                    Voyages validés : <strong style="color: #f1c40f; font-size: 1.2rem;"><%= loyalty.count %></strong>
+                </div>
+            </div>
+
+            <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(250px, 1fr)); gap: 20px; position: relative; z-index: 2;">
+                <div style="background: <%= tier >= 1 ? 'linear-gradient(135deg, #FFF 0%, #f0f0f0 100%)' : 'rgba(255,255,255,0.05)' %>; color: <%= tier >= 1 ? '#333' : 'rgba(255,255,255,0.5)' %>; padding: 25px; border-radius: 15px; border: 2px solid <%= tier >= 1 ? '#cd7f32' : 'rgba(255,255,255,0.1)' %>; opacity: <%= tier >= 1 ? '1' : '0.6' %>;">
+                    <h3 style="margin: 0; color: #cd7f32;">🥉 Wonder 1</h3>
+                    <p style="font-size: 0.9rem;">Dès 2 voyages</p>
+                </div>
+                <div style="background: <%= tier >= 2 ? 'linear-gradient(135deg, #FFF 0%, #f0f0f0 100%)' : 'rgba(255,255,255,0.05)' %>; color: <%= tier >= 2 ? '#333' : 'rgba(255,255,255,0.5)' %>; padding: 25px; border-radius: 15px; border: 2px solid <%= tier >= 2 ? '#bdc3c7' : 'rgba(255,255,255,0.1)' %>; opacity: <%= tier >= 2 ? '1' : '0.6' %>;">
+                    <h3 style="margin: 0; color: #7f8c8d;">🥈 Wonder 2</h3>
+                    <p style="font-size: 0.9rem;">Dès 7 voyages (-10%)</p>
+                </div>
+                <div style="background: <%= tier >= 3 ? 'linear-gradient(135deg, #FFF 0%, #fffbe6 100%)' : 'rgba(255,255,255,0.05)' %>; color: <%= tier >= 3 ? '#333' : 'rgba(255,255,255,0.5)' %>; padding: 25px; border-radius: 15px; border: 2px solid <%= tier >= 3 ? '#f1c40f' : 'rgba(255,255,255,0.1)' %>; opacity: <%= tier >= 3 ? '1' : '0.6' %>;">
+                    <h3 style="margin: 0; color: #f39c12;">🥇 Wonder 3</h3>
+                    <p style="font-size: 0.9rem;">Dès 15 voyages (-15%)</p>
+                </div>
+            </div>
+        </div>
+    <% } %>
+
+    <% if (orders.length === 0) { %>
+        <div style="text-align: center; color: #777; margin-top: 50px;">
+            <h3>Vous n'avez aucun dossier en cours.</h3>
+            <div style="margin-top: 20px;">
+                <a href="/destinations" class="btn-login">✈️ Faire un devis</a>
+            </div>
+        </div>
+    <% } else { %>
+
+        <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(300px, 1fr)); gap: 30px;">
+            
+            <% orders.forEach(order => { %>
+                
+                <% 
+                    let statusColor = '#f39c12'; // Orange par défaut
+                    let statusIcon = '⏳';
+                    
+                    // On gère les statuts avec souplesse (minuscule/majuscule)
+                    let s = order.status ? order.status.toLowerCase() : '';
+                    
+                    if (s.includes('valid') || s.includes('pay')) { statusColor = '#27ae60'; statusIcon = '✅'; }
+                    if (s.includes('termin')) { statusColor = '#2c3e50'; statusIcon = '🏁'; }
+                    if (s.includes('refus')) { statusColor = '#c0392b'; statusIcon = '❌'; }
+                %>
+
+                <div class="card" style="display: flex; flex-direction: column; border-top: 5px solid <%= statusColor %>; height: 100%; border-radius: 15px; overflow: hidden; padding: 0; box-shadow: 0 5px 15px rgba(0,0,0,0.1);">
+                    
+                    <div style="padding: 15px 20px; border-bottom: 1px solid #eee; display: flex; justify-content: space-between; align-items: center; background: #fbfbfb;">
+                        <span style="font-size: 0.85rem; color: #666; font-weight: bold;">#<%= order.reservationNumber || '...' %></span>
+                        <span style="font-size: 0.8rem; background: <%= statusColor %>; color: white; padding: 3px 10px; border-radius: 10px;">
+                            <%= order.status %> <%= statusIcon %>
+                        </span>
+                    </div>
+
+                    <div style="padding: 20px; flex-grow: 1; display: flex; flex-direction: column;">
+                        <h3 style="margin: 0 0 10px 0; color: #2c3e50; font-size: 1.3rem;"><%= order.tripTitle %></h3>
+                        
+                        <ul style="color: #555; font-size: 0.9rem; padding-left: 20px; margin-bottom: 20px;">
+                            <li>👤 <strong><%= order.userName %></strong> (<%= order.nbPeople %> pers.)</li>
+                            <li>💳 Paiement : <%= order.paymentMethod || 'Non défini' %></li>
+                            <li>📅 Date : <%= new Date(order.createdAt).toLocaleDateString() %></li>
+                        </ul>
+
+                        <div style="margin-top: auto; border-top: 1px solid #eee; padding-top: 15px;">
+                            
+                            <div style="text-align: right; font-size: 1.4rem; font-weight: bold; color: #333; margin-bottom: 15px;">
+                                <%= order.totalPrice ? order.totalPrice + ' €' : 'Prix à confirmer' %>
+                            </div>
+
+                            <% if (s.includes('valid') || s.includes('pay') || s.includes('termin')) { %>
+                                <a href="/mes-demandes/facture/<%= order._id %>" class="btn-login" style="display:block; text-align:center; background: #34495e; color: white; text-decoration: none; padding: 10px; border-radius: 5px; font-size: 0.9rem;">
+                                    📄 Télécharger Billet PDF
+                                </a>
+                            <% } %>
+
+                            <% 
+                                // Vérification intelligente de l'avis
+                                let alreadyReviewed = false;
+                                if (locals.reviewedTripIds && order.tripId) {
+                                    alreadyReviewed = reviewedTripIds.includes(order.tripId.toString());
+                                }
+                                
+                                // Vérification intelligente du statut (contient "pay" ou "termin")
+                                let isPaidOrFinished = s.includes('termin');
+                            %>
+
+                            <% if (order.tripId && isPaidOrFinished && !alreadyReviewed) { %>
+                                <a href="/mes-demandes/avis/<%= order.tripId %>" class="btn-login" style="display:block; text-align:center; background: #f1c40f; color: #333; text-decoration: none; padding: 10px; border-radius: 5px; margin-top: 10px; font-weight: bold;">
+                                    ⭐ Donner mon avis
+                                </a>
+                            <% } %>
+
+                            <% if (alreadyReviewed) { %>
+                                <div style="text-align: center; margin-top: 10px; color: #f1c40f; font-weight: bold; font-size: 0.9rem;">
+                                    ✅ Avis publié
+                                </div>
+                            <% } %>
+
+                        </div>
+                    </div>
+                </div>
+            <% }) %>
+        </div>
+    <% } %>
+</div>
+
+<%- include('partials/footer') %>
